@@ -1,13 +1,13 @@
 from django.db import models
+from django_tenants.models import TenantMixin, DomainMixin
 import uuid
 
 
-class Organization(models.Model):
+class Organization(TenantMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     name = models.CharField(max_length=255)
-    code = models.CharField(max_length=50, unique=True)
-
+    
     address = models.TextField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
     email = models.EmailField(blank=True)
@@ -17,8 +17,14 @@ class Organization(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    auto_create_schema = True
+
     class Meta:
         ordering = ["name"]
 
     def __str__(self):
         return self.name
+
+
+class Domain(DomainMixin):
+    pass

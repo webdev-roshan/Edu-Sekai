@@ -13,7 +13,9 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
 # Application definition
-INSTALLED_APPS = [
+
+SHARED_APPS = (
+    "django_tenants",  # mandatory
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -24,11 +26,24 @@ INSTALLED_APPS = [
     "corsheaders",
     "accounts",
     "roles",
-    "profiles",
     "organizations",
+    "payments",
+)
+
+TENANT_APPS = (
+    "profiles",
+    # Add other tenant-specific apps here
+)
+
+INSTALLED_APPS = list(SHARED_APPS) + [
+    app for app in TENANT_APPS if app not in SHARED_APPS
 ]
 
+TENANT_MODEL = "organizations.Organization"
+TENANT_DOMAIN_MODEL = "organizations.Domain"
+
 MIDDLEWARE = [
+    "django_tenants.middleware.main.TenantMainMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -61,14 +76,16 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 DATABASES = {
     "default": {
-        "ENGINE": config("DB_ENGINE", default="django.db.backends.sqlite3"),
-        "NAME": os.path.join(BASE_DIR, config("DB_NAME", default="db.sqlite3")),
+        "ENGINE": "django_tenants.postgresql_backend",
+        "NAME": config("DB_NAME", default="schoolsansar"),
         "USER": config("DB_USER", default=""),
         "PASSWORD": config("DB_PASSWORD", default=""),
         "HOST": config("DB_HOST", default=""),
         "PORT": config("DB_PORT", default=""),
     }
 }
+
+DATABASE_ROUTERS = ("django_tenants.routers.TenantSyncRouter",)
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -113,3 +130,10 @@ SIMPLE_JWT = {
 # CORS
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
 CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
+
+# eSewa Payment Gateway
+ESEWA_CLIENT_ID = config("ESEWA_CLIENT_ID")
+ESEWA_CLIENT_SECRET = config("ESEWA_CLIENT_SECRET")
+ESEWA_URL = config(
+    "ESEWA_URL", default="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
+)

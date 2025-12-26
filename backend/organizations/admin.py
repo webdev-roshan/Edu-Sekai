@@ -1,10 +1,17 @@
 from django.contrib import admin
-from .models import Organization
+from django_tenants.admin import TenantAdminMixin
+from .models import Organization, Domain
 
 
 @admin.register(Organization)
-class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ("name", "code", "is_active", "created_at")
-    search_fields = ("name", "code")
+class OrganizationAdmin(TenantAdminMixin, admin.ModelAdmin):
+    list_display = ("name", "schema_name", "is_active", "created_at")
+    search_fields = ("name", "schema_name")
     list_filter = ("is_active",)
     readonly_fields = ("created_at", "updated_at")
+
+
+@admin.register(Domain)
+class DomainAdmin(admin.ModelAdmin):
+    list_display = ("domain", "tenant", "is_primary")
+    search_fields = ("domain", "tenant__name")
