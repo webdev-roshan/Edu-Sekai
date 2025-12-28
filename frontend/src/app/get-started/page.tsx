@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, GraduationCap, CheckCircle, Shield, Zap, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useInitPayment } from "@/hooks/payments";
@@ -28,7 +28,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-// Validation Schema
 const formSchema = z.object({
     organizationName: z.string().min(2, "School name must be at least 2 characters."),
     subdomain: z.string()
@@ -61,7 +60,6 @@ export default function GetStartedPage() {
     });
 
     async function onFormSubmit(values: FormValues) {
-        // Initialize payment
         try {
             const payload = {
                 organization_name: values.organizationName,
@@ -83,7 +81,6 @@ export default function GetStartedPage() {
     function handleEsewaPayment() {
         if (!paymentData || !formData) return;
 
-        // Create a form and submit to eSewa
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = paymentData.url;
@@ -115,150 +112,280 @@ export default function GetStartedPage() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-            <Card className="w-full max-w-lg">
-                <CardHeader>
-                    <CardTitle>Create Your School</CardTitle>
-                    <CardDescription>
-                        {step === "form"
-                            ? "Enter your organization details to get started."
-                            : "Complete payment to activate your account."}
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {step === "form" ? (
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-4">
-                                <FormField
-                                    control={form.control}
-                                    name="organizationName"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <FloatingLabelInput label="School Name" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+        <div className="flex min-h-screen bg-linear-to-br from-blue-50 via-teal-50 to-green-50">
+            {/* Left Side - Information */}
+            <div className="hidden lg:flex lg:w-5/12 bg-linear-to-br from-blue-600 to-teal-600 p-12 flex-col justify-between text-white">
+                <div>
+                    <div className="flex items-center gap-3 mb-12">
+                        <GraduationCap className="h-10 w-10" />
+                        <span className="text-3xl font-bold">Edu Sekai</span>
+                    </div>
 
-                                <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-8">
+                        <div>
+                            <h1 className="text-4xl font-bold mb-4 leading-tight">
+                                Start Your Educational Journey Today
+                            </h1>
+                            <p className="text-lg text-blue-100">
+                                Join thousands of institutions transforming education with our comprehensive management platform.
+                            </p>
+                        </div>
+
+                        <div className="space-y-6 mt-12">
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                                    <CheckCircle className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-1">Complete Management Solution</h3>
+                                    <p className="text-blue-100">Manage students, teachers, fees, and more in one place</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                                    <Shield className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-1">Secure & Reliable</h3>
+                                    <p className="text-blue-100">Bank-grade security with 99.9% uptime guarantee</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                                    <Zap className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-1">Quick Setup</h3>
+                                    <p className="text-blue-100">Get started in minutes with our intuitive setup process</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start gap-4">
+                                <div className="p-3 bg-white/10 rounded-lg backdrop-blur-sm">
+                                    <Users className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-lg mb-1">24/7 Support</h3>
+                                    <p className="text-blue-100">Dedicated support team ready to help anytime</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-12 border-t border-white/20">
+                    <p className="text-blue-100 text-sm">
+                        Trusted by 500+ educational institutions worldwide
+                    </p>
+                </div>
+            </div>
+
+            {/* Right Side - Form */}
+            <div className="flex-1 flex items-center justify-center p-6 lg:p-12">
+                <Card className="w-full max-w-xl border-slate-200 shadow-2xl">
+                    <CardHeader className="space-y-3 pb-6">
+                        <div className="lg:hidden flex items-center gap-2 mb-4">
+                            <GraduationCap className="h-8 w-8 text-blue-600" />
+                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">Edu Sekai</span>
+                        </div>
+                        <CardTitle className="text-2xl font-bold text-slate-900">
+                            {step === "form" ? "Create Your Institution Account" : "Complete Your Payment"}
+                        </CardTitle>
+                        <CardDescription className="text-slate-600">
+                            {step === "form"
+                                ? "Fill in your details to get started with a 30-day free trial"
+                                : "Secure your lifetime access with a one-time payment"}
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {step === "form" ? (
+                            <Form {...form}>
+                                <form onSubmit={form.handleSubmit(onFormSubmit)} className="space-y-5">
                                     <FormField
                                         control={form.control}
-                                        name="phone"
+                                        name="organizationName"
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <FloatingLabelInput label="Phone Number of my school" {...field} />
+                                                    <FloatingLabelInput label="Institution Name" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
                                     <FormField
                                         control={form.control}
                                         name="subdomain"
                                         render={({ field }) => (
                                             <FormItem>
-                                                {/* Subdomain has special layout, keeping standard input for now or need to adapt floating label to it. 
-                                                   Floating label usually assumes it wraps the input. 
-                                                   With the suffix .localhost, it's a flex container. 
-                                                   Let's keep standard layout for subdomain but style it to match if possible, 
-                                                   or just use FloatingLabelInput if the suffix can be handled? 
-                                                   The user specifically asked for FloatingLabelInput. 
-                                                   If I use it, the suffix might break the floating effect or position.
-                                                   Better to keep it cleanly separate or stick to standard for this complex field.
-                                                   I will use standard Input for subdomain as it's a composite field (input + .localhost).
-                                               */}
-                                                <FormLabel>Subdomain</FormLabel>
+                                                <FormLabel className="text-slate-700">Your Subdomain</FormLabel>
                                                 <FormControl>
                                                     <div className="flex">
-                                                        <Input placeholder="school1" {...field} className="rounded-r-none" />
-                                                        <div className="flex items-center px-3 border border-l-0 rounded-r-md bg-secondary/10 text-sm text-muted-foreground">
-                                                            .localhost
+                                                        <Input
+                                                            placeholder="myschool"
+                                                            {...field}
+                                                            className="rounded-r-none border-slate-300 focus:border-blue-500"
+                                                        />
+                                                        <div className="flex items-center px-4 border border-l-0 rounded-r-lg bg-slate-50 text-sm text-slate-600 font-medium">
+                                                            .edusekai.com
                                                         </div>
                                                     </div>
                                                 </FormControl>
-                                                <FormDescription className="text-xs">
-                                                    Your unique URL.
+                                                <FormDescription className="text-xs text-slate-500">
+                                                    Your unique URL for accessing the platform
                                                 </FormDescription>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <FormField
+                                            control={form.control}
+                                            name="email"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <FloatingLabelInput label="Admin Email" type="email" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <FormField
+                                            control={form.control}
+                                            name="phone"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormControl>
+                                                        <FloatingLabelInput label="Phone Number" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+
+                                    <FormField
+                                        control={form.control}
+                                        name="password"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormControl>
+                                                    <FloatingLabelInput label="Password (min 8 characters)" type="password" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                        <div className="flex items-start gap-3">
+                                            <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                                            <div className="text-sm text-blue-900">
+                                                <p className="font-semibold mb-1">30-Day Free Trial Included</p>
+                                                <p className="text-blue-700">No credit card required. Full access to all features.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700"
+                                        disabled={isInitializing}
+                                    >
+                                        {isInitializing ? (
+                                            <>
+                                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                                Processing...
+                                            </>
+                                        ) : (
+                                            "Continue to Payment"
+                                        )}
+                                    </Button>
+
+                                    <p className="text-xs text-center text-slate-500 pt-2">
+                                        By continuing, you agree to our Terms of Service and Privacy Policy
+                                    </p>
+                                </form>
+                            </Form>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <p className="text-sm font-medium text-green-700 mb-1">One-Time Payment</p>
+                                            <p className="text-4xl font-bold text-green-900">Rs. 5,000</p>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="inline-block bg-green-600 text-white px-4 py-2 rounded-full text-sm font-bold">
+                                                Lifetime Access
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="border-t border-green-200 pt-4 mt-4">
+                                        <p className="text-sm text-green-700">
+                                            <CheckCircle className="inline h-4 w-4 mr-2" />
+                                            All features included
+                                        </p>
+                                        <p className="text-sm text-green-700 mt-2">
+                                            <CheckCircle className="inline h-4 w-4 mr-2" />
+                                            No recurring fees
+                                        </p>
+                                    </div>
                                 </div>
 
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <FloatingLabelInput label="Admin Email" type="email" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormControl>
-                                                <FloatingLabelInput label="Password" type="password" {...field} />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div className="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                                    <p className="text-sm text-slate-700 mb-2">
+                                        <span className="font-semibold text-slate-900">Institution:</span> {formData?.organizationName}
+                                    </p>
+                                    <p className="text-sm text-slate-700 mb-2">
+                                        <span className="font-semibold text-slate-900">Subdomain:</span> {formData?.subdomain}.edusekai.com
+                                    </p>
+                                    <p className="text-sm text-slate-700">
+                                        <span className="font-semibold text-slate-900">Admin Email:</span> {formData?.email}
+                                    </p>
+                                </div>
 
-                                <Button type="submit" className="w-full">
-                                    Proceed to Payment
+                                <Button
+                                    className="w-full h-12 text-base font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                                    onClick={handleEsewaPayment}
+                                    disabled={isInitializing}
+                                >
+                                    {isInitializing ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                            Processing...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Shield className="mr-2 h-5 w-5" />
+                                            Pay Securely with eSewa
+                                        </>
+                                    )}
                                 </Button>
-                            </form>
-                        </Form>
-                    ) : (
-                        <div className="space-y-6">
-                            <div className="bg-green-50 p-4 rounded-lg flex items-center justify-between border border-green-200">
-                                <div>
-                                    <p className="text-sm font-medium text-green-900">Total Amount</p>
-                                    <p className="text-2xl font-bold text-green-700">Rs. 5,000</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-xs text-green-600">Lifetime Access</p>
-                                </div>
-                            </div>
 
-                            <div className="space-y-2">
-                                <p className="text-sm text-muted-foreground">
-                                    You are paying for <strong>{formData?.organizationName}</strong>.
-                                    Please complete the payment using eSewa.
+                                <Button
+                                    variant="outline"
+                                    className="w-full h-12 border-slate-300"
+                                    onClick={() => setStep("form")}
+                                    disabled={isInitializing}
+                                >
+                                    Back to Details
+                                </Button>
+
+                                <p className="text-xs text-center text-slate-500">
+                                    <Shield className="inline h-3 w-3 mr-1" />
+                                    Secure payment powered by eSewa
                                 </p>
                             </div>
-
-                            <Button
-                                variant="default"
-                                className="w-full bg-green-600 hover:bg-green-700 text-white"
-                                onClick={handleEsewaPayment}
-                                disabled={isInitializing}
-                            >
-                                {isInitializing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                                Pay with eSewa
-                            </Button>
-
-                            <Button
-                                variant="ghost"
-                                className="w-full"
-                                onClick={() => setStep("form")}
-                                disabled={isInitializing}
-                            >
-                                Back to Details
-                            </Button>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
