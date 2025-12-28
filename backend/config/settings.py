@@ -132,8 +132,9 @@ CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=boo
 CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
 
 # eSewa Payment Gateway
-ESEWA_CLIENT_ID = config("ESEWA_CLIENT_ID")
-ESEWA_CLIENT_SECRET = config("ESEWA_CLIENT_SECRET")
+ESEWA_CLIENT_ID = config("ESEWA_CLIENT_ID", default="")
+ESEWA_CLIENT_SECRET = config("ESEWA_CLIENT_SECRET", default="")
+ESEWA_PRODUCT_CODE = config("ESEWA_PRODUCT_CODE", default="EPAYTEST")
 ESEWA_URL = config(
     "ESEWA_URL", default="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
 )

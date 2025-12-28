@@ -33,3 +33,17 @@ export function useInitPayment() {
         },
     });
 }
+
+async function verifyPayment(dataString: string): Promise<any> {
+    const { data } = await axiosInstance.get(`/payments/verify/?data=${dataString}`);
+    return data;
+}
+
+export function useVerifyPayment() {
+    return useMutation({
+        mutationFn: verifyPayment,
+        onError: (error: Error) => {
+            toast.error(error.message || "Payment verification failed.");
+        },
+    });
+}

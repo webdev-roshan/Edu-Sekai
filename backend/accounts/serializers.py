@@ -30,16 +30,8 @@ class LoginSerializer(serializers.Serializer):
 
 
 class OrganizationRegisterSerializer(serializers.Serializer):
-    # This serializer handles the creation of:
-    # 1. Organization (Tenant)
-    # 2. Domain
-    # 3. User (Admin)
-    # 4. UserRole (Admin link)
-
     organization_name = serializers.CharField(max_length=255)
-    subdomain = serializers.SlugField(max_length=50)  # e.g. "school1"
-
-    # User fields
+    subdomain = serializers.SlugField(max_length=50)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
     first_name = serializers.CharField(max_length=50, required=False)
@@ -61,14 +53,10 @@ class OrganizationRegisterSerializer(serializers.Serializer):
         email = validated_data["email"]
         password = validated_data["password"]
 
-        # Base domain logic - in production this should be from settings
-        # Localhost: school.localhost
         base_domain = "localhost"
         full_domain_name = f"{subdomain}.{base_domain}"
 
         with transaction.atomic():
-            # 1. Create Tenant (Organization)
-            # schema_name MUST be unique and valid postgres schema name
             organization = Organization.objects.create(
                 name=org_name,
                 schema_name=subdomain,  # Using subdomain as schema name
@@ -82,20 +70,20 @@ class OrganizationRegisterSerializer(serializers.Serializer):
             # 3. Create User (in Public Schema - User is Shared)
             user = User.objects.create_user(email=email, password=password)
 
-            # 4. Create "Admin" Role if not exists (Public Schema)
-            admin_role, _ = Role.objects.get_or_create(
-                slug="admin", defaults={"name": "Administrator", "is_system_role": True}
+            # 4. Create "Owner" Role if not exists (Public Schema)
+            owner_role, _ = Role.objects.get_or_create(
+                slug="owner", defaults={"name": "Owner", "is_system_role": True}
             )
 
             # 5. Link User to Org with Role (Public Schema)
             UserRole.objects.create(
-                user=user, organization=organization, role=admin_role
+                user=user, organization=organization, role=owner_role
             )
 
             # Note: We might want to create a Profile inside the Tenant Schema?
             # If Profiles are in TENANT_APPS, we must context-switch to create it.
             # But the User is global. The profile depends on the Tenant.
-            # Let's create a minimal Admin Profile inside the tenant.
+            # Let's create a minimal Owner Profile inside the tenant.
 
             from django_tenants.utils import tenant_context
             from profiles.models import StaffProfile

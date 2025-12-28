@@ -96,7 +96,7 @@ export default function GetStartedPage() {
             product_code: paymentData.product_code,
             product_service_charge: '0',
             product_delivery_charge: '0',
-            success_url: `${window.location.origin}/payment-success?subdomain=${formData.subdomain}`,
+            success_url: `${window.location.origin}/payment-success`,
             failure_url: `${window.location.origin}/get-started`,
             signed_field_names: 'total_amount,transaction_uuid,product_code',
             signature: paymentData.signature,
@@ -149,7 +149,7 @@ export default function GetStartedPage() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormControl>
-                                                    <FloatingLabelInput label="Phone Number" {...field} />
+                                                    <FloatingLabelInput label="Phone Number of my school" {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>

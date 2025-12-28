@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     image: postgres:15-alpine
-    container_name: schoolsansar_db
+    container_name: EduSekai_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     env_file:
@@ -16,7 +16,7 @@ services:
 
   backend:
     build: .
-    container_name: schoolsansar_backend
+    container_name: EduSekai_backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
