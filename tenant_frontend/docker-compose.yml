@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3555:3555"
+    env_file:
+      - .env
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=100
+      - WATCHPACK_POLLING=true
+    restart: always
+    container_name: EduSekai_tenant_frontend
