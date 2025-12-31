@@ -1,7 +1,19 @@
 import axios from 'axios';
 
+const getBaseURL = () => {
+    if (typeof window !== 'undefined') {
+        const hostname = window.location.hostname;
+        // If we are on a subdomain like org.localhost
+        if (hostname.includes('.localhost')) {
+            const subdomain = hostname.split('.')[0];
+            return `http://${subdomain}.localhost:8000/api`;
+        }
+    }
+    return 'http://localhost:8000/api';
+};
+
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/api',
+    baseURL: getBaseURL(),
     withCredentials: true,
 });
 

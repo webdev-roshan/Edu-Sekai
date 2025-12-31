@@ -93,3 +93,32 @@ class StaffProfile(BaseProfile):
 
     def __str__(self):
         return f"Staff: {self.user.email}"
+
+
+class InstitutionProfile(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    organization = models.OneToOneField(
+        "organizations.Organization",
+        on_delete=models.CASCADE,
+        related_name="institution_profile",
+    )
+    logo = models.ImageField(upload_to="institution/logos/", null=True, blank=True)
+    banner = models.ImageField(upload_to="institution/banners/", null=True, blank=True)
+    tagline = models.CharField(max_length=255, blank=True)
+    mission = models.TextField(blank=True)
+    vision = models.TextField(blank=True)
+    about = models.TextField(blank=True)
+    established_date = models.DateField(null=True, blank=True)
+    website = models.URLField(blank=True)
+
+    # Social links
+    facebook_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
+    twitter_url = models.URLField(blank=True)
+    linkedin_url = models.URLField(blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Institution: {self.organization.name}"

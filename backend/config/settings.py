@@ -10,12 +10,13 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 
 # Allowed hosts
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
 SHARED_APPS = (
     "django_tenants",  # mandatory
+    "jazzmin",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -28,6 +29,7 @@ SHARED_APPS = (
     "roles",
     "organizations",
     "payments",
+    "profiles",
 )
 
 TENANT_APPS = (
@@ -43,10 +45,10 @@ TENANT_MODEL = "organizations.Organization"
 TENANT_DOMAIN_MODEL = "organizations.Domain"
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django_tenants.middleware.main.TenantMainMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -128,8 +130,14 @@ SIMPLE_JWT = {
 }
 
 # CORS
-CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
-CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https?://localhost:3000$",
+    r"^https?://localhost:3555$",
+    r"^https?://([a-zA-Z0-9-]+\.)+localhost:3000$",
+    r"^https?://([a-zA-Z0-9-]+\.)+localhost:3555$",
+]
+CORS_ALLOW_CREDENTIALS = True
 
 # eSewa Payment Gateway
 ESEWA_CLIENT_ID = config("ESEWA_CLIENT_ID", default="")
@@ -138,3 +146,49 @@ ESEWA_PRODUCT_CODE = config("ESEWA_PRODUCT_CODE", default="EPAYTEST")
 ESEWA_URL = config(
     "ESEWA_URL", default="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
 )
+
+# Jazzmin Settings
+JAZZMIN_SETTINGS = {
+    "site_title": "EDU Sekai Admin",
+    "site_header": "EDU Sekai",
+    "site_brand": "EDU Sekai",
+    "welcome_sign": "Welcome to EDU Sekai Management System",
+    "show_sidebar": True,
+    # 🔑 IMPORTANT
+    "navigation_expanded": False,  # allow collapse
+    "search_model": ["accounts.User", "organizations.Organization"],
+    "icons": {
+        "accounts.User": "fas fa-users",
+        "accounts.Group": "fas fa-users-cog",
+        "organizations.Organization": "fas fa-university",
+        "organizations.Domain": "fas fa-globe",
+        "payments.Payment": "fas fa-credit-card",
+        "profiles.StudentProfile": "fas fa-user-graduate",
+        "profiles.InstructorProfile": "fas fa-chalkboard-teacher",
+        "profiles.StaffProfile": "fas fa-user-tie",
+        "profiles.InstitutionProfile": "fas fa-school",
+        "roles.Role": "fas fa-user-shield",
+        "roles.UserRole": "fas fa-user-tag",
+    },
+    "order_with_respect_to": [
+        "organizations",
+        "accounts",
+        "profiles",
+        "payments",
+        "roles",
+    ],
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "theme": "flatly",
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "navbar": "navbar-dark",
+    "navbar_fixed": True,
+    "layout_fixed": True,
+}

@@ -9,6 +9,12 @@ from organizations.models import Organization, Domain
 from roles.models import Role, UserRole
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("id", "email", "is_active")
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -86,25 +92,26 @@ class OrganizationRegisterSerializer(serializers.Serializer):
             # Let's create a minimal Owner Profile inside the tenant.
 
             from django_tenants.utils import tenant_context
-            from profiles.models import StaffProfile
+            from profiles.models import StaffProfile, InstitutionProfile
 
             with tenant_context(organization):
-                # Now we are in the tenant schema
-                # StaffProfile requires fields. Let's create a basic one.
-                # Assuming 'StaffProfile' is sufficient for Admin.
+                # 1. Create Owner Staff Profile
                 StaffProfile.objects.create(
-                    user=user,  # User is cross-schema referenced (Shared)
-                    organization=organization,  # This might be redundant if data is isolated, but model has it.
+                    user=user,
+                    organization=organization,
                     first_name=validated_data.get("first_name", ""),
                     last_name=validated_data.get("last_name", ""),
-                    employee_id="ADMIN-001",
-                    designation="System Administrator",
+                    employee_id="OWNER-001",
+                    designation="Owner / Administrator",
                     department="Administration",
                 )
+
+                # 2. Create Institution Profile
+                InstitutionProfile.objects.create(organization=organization)
 
         return {
             "organization": organization,
             "domain": domain,
             "user": user,
-            "domain_url": f"http://{full_domain_name}:8000",  # helpful for frontend
+            "domain_url": f"http://{full_domain_name}:3555/login",  # redirect to tenant dashboard login
         }
