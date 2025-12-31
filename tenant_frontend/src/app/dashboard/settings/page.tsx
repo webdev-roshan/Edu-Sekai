@@ -85,7 +85,7 @@ export default function InstitutionSettingsPage() {
     };
 
     return (
-        <div className="max-w-5xl mx-auto space-y-10">
+        <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-5">
             {/* Header info */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div>
@@ -94,7 +94,7 @@ export default function InstitutionSettingsPage() {
                 </div>
                 <Button
                     onClick={handleSubmit}
-                    className="bg-sky-600 hover:bg-sky-500 h-14 px-10 rounded-2xl shadow-lg shadow-sky-500/20 text-base font-bold"
+                    size="xxl"
                     disabled={isUpdating}
                 >
                     {isUpdating ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : <Save className="h-5 w-5 mr-2" />}
@@ -105,9 +105,8 @@ export default function InstitutionSettingsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                 {/* Left Side: Secondary Content */}
                 <div className="lg:col-span-4 space-y-8">
-                    <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden">
-                        <div className="h-2 w-full bg-teal-500" />
-                        <CardHeader>
+                    <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden pt-0">
+                        <CardHeader className="pt-2">
                             <CardTitle className="text-lg">Logo & Banner</CardTitle>
                             <CardDescription>Visual identity of your school</CardDescription>
                         </CardHeader>
@@ -124,18 +123,10 @@ export default function InstitutionSettingsPage() {
                                         </>
                                     )}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                        <Button variant="secondary" size="sm" className="font-bold">Choose Image</Button>
+                                        <Button variant="default" size="lg" className="font-bold">Choose Image</Button>
                                     </div>
                                 </div>
                             </div>
-
-                            <Card className="bg-sky-600 border-none p-6 text-white rounded-[2rem] shadow-xl shadow-sky-500/20">
-                                <Rocket className="h-10 w-10 mb-4 text-sky-200" />
-                                <h3 className="text-xl font-bold mb-2">Build Your Brand</h3>
-                                <p className="text-sky-100 text-sm leading-relaxed">
-                                    These details appear on reports, student IDs, and public pages. Make sure they are accurate.
-                                </p>
-                            </Card>
                         </CardContent>
                     </Card>
                 </div>
@@ -144,15 +135,10 @@ export default function InstitutionSettingsPage() {
                 <div className="lg:col-span-8 space-y-10">
                     {/* Basic Info */}
                     <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900">
-                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-8">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 bg-sky-100 dark:bg-sky-500/10 text-sky-600 rounded-2xl">
-                                    <Info className="h-6 w-6" />
-                                </div>
-                                <CardTitle className="text-xl">Basic Information</CardTitle>
-                            </div>
+                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-0">
+                            <CardTitle className="text-xl">Basic Information</CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-10 space-y-8">
+                        <CardContent className="space-y-5">
                             <FloatingLabelInput
                                 id="tagline"
                                 label="Institutional Tagline"
@@ -165,7 +151,7 @@ export default function InstitutionSettingsPage() {
                                 <Label htmlFor="about" className="text-xs uppercase font-extrabold text-slate-400 tracking-widest pl-1">About the school</Label>
                                 <Textarea
                                     id="about"
-                                    className="min-h-[140px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-sky-500 dark:focus:border-sky-500 transition-all rounded-[1.5rem] p-6 text-base"
+                                    className="min-h-[140px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-sky-500 dark:focus:border-sky-500 transition-all rounded-3xl p-6 text-base"
                                     placeholder="Write a brief introduction about your institution..."
                                     value={formData.about || ""}
                                     onChange={handleChange}
@@ -192,15 +178,10 @@ export default function InstitutionSettingsPage() {
 
                     {/* Mission & Vision */}
                     <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900">
-                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-8">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 bg-teal-100 dark:bg-teal-500/10 text-teal-600 rounded-2xl">
-                                    <Target className="h-6 w-6" />
-                                </div>
-                                <CardTitle className="text-xl">Core Values</CardTitle>
-                            </div>
+                        <CardHeader className="border-b border-slate-50 dark:border-slate-800">
+                            <CardTitle className="text-xl">Core Values</CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-10 space-y-8">
+                        <CardContent className="space-y-5">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-3">
                                     <div className="flex items-center gap-2 mb-1 pl-1">
@@ -209,7 +190,7 @@ export default function InstitutionSettingsPage() {
                                     </div>
                                     <Textarea
                                         id="mission"
-                                        className="min-h-[120px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-teal-500 transition-all rounded-[1.5rem] p-6"
+                                        className="min-h-[120px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-teal-500 transition-all rounded-xl p-6"
                                         value={formData.mission || ""}
                                         onChange={handleChange}
                                     />
@@ -221,7 +202,7 @@ export default function InstitutionSettingsPage() {
                                     </div>
                                     <Textarea
                                         id="vision"
-                                        className="min-h-[120px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-teal-500 transition-all rounded-[1.5rem] p-6"
+                                        className="min-h-[120px] bg-slate-50 dark:bg-slate-800/50 border-transparent focus:border-teal-500 transition-all rounded-xl p-6"
                                         value={formData.vision || ""}
                                         onChange={handleChange}
                                     />
@@ -232,10 +213,10 @@ export default function InstitutionSettingsPage() {
 
                     {/* Social links */}
                     <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden">
-                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-8">
+                        <CardHeader className="border-b border-slate-50 dark:border-slate-800">
                             <CardTitle className="text-xl">Social Presence</CardTitle>
                         </CardHeader>
-                        <CardContent className="pt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="relative">
                                 <Facebook className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-blue-600" />
                                 <FloatingLabelInput

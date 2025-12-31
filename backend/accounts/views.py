@@ -5,7 +5,9 @@ from rest_framework import status
 from django.conf import settings
 
 from .serializers import LoginSerializer, OrganizationRegisterSerializer, UserSerializer
-from .utils.jwt_cookies import set_jwt_cookies, clear_jwt_cookies
+from .utils.jwt_cookies import set_jwt_cookies, clear_jwt_cookies, set_access_cookie
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 
 
 class RegisterOrganizationView(APIView):
@@ -46,6 +48,33 @@ class LogoutView(APIView):
         response = Response({"message": "Logout successful"}, status=status.HTTP_200_OK)
         clear_jwt_cookies(response)
         return response
+
+
+class TokenRefreshView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token not found"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        try:
+            refresh = RefreshToken(refresh_token)
+            access_token = str(refresh.access_token)
+
+            response = Response(
+                {"message": "Token refreshed"}, status=status.HTTP_200_OK
+            )
+            set_access_cookie(response, access_token)
+            return response
+        except (TokenError, InvalidToken):
+            return Response(
+                {"detail": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
 class MeView(APIView):

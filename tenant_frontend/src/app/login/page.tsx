@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GraduationCap, Loader2, CheckCircle, Shield, Zap, Mail, Lock, ArrowRight } from "lucide-react";
+import { GraduationCap, Loader2, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useLogin } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -32,7 +32,7 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
             {/* Left Side - Information (Hidden on mobile) */}
-            <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-sky-600 to-teal-600 p-12 flex-col justify-between text-white relative overflow-hidden">
+            <div className="hidden lg:flex lg:w-5/12 bg-gradient-to-br from-sky-600 to-teal-600 p-12 flex-col justify-between text-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
 
                 <div className="relative z-10">
@@ -46,30 +46,12 @@ export default function LoginPage() {
                     <div className="space-y-10">
                         <div className="animate-in slide-in-from-left duration-700 delay-100">
                             <h1 className="text-5xl font-extrabold mb-6 leading-tight">
-                                Manage Your Institution <br />
+                                Manage Your Education Institution <br />
                                 <span className="text-sky-200">With Confidence.</span>
                             </h1>
                             <p className="text-xl text-sky-50/80 max-w-lg leading-relaxed">
                                 Access your personalized dashboard to manage students, staff, and institutional operations with ease.
                             </p>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-6 mt-12">
-                            {[
-                                { icon: Shield, title: "Secure Access", desc: "Multi-tenant isolation ensures your data stays private." },
-                                { icon: Zap, title: "Instant Updates", desc: "Real-time tracking of attendance and performance." },
-                                { icon: CheckCircle, title: "Verified Profiles", desc: "Role-based access control for every user." }
-                            ].map((item, i) => (
-                                <div key={i} className={`flex items-start gap-4 animate-in slide-in-from-left duration-700 delay-${(i + 2) * 100}`}>
-                                    <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
-                                        <item.icon className="h-6 w-6 text-sky-200" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-bold text-lg mb-1">{item.title}</h3>
-                                        <p className="text-sky-50/70">{item.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
                         </div>
                     </div>
                 </div>

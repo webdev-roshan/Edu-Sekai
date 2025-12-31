@@ -63,37 +63,27 @@ export default function ProfilePage() {
     };
 
     const role = user?.roles?.[0] || "member";
-    const initials = `${user?.profile?.first_name?.[0] || ""}${user?.profile?.last_name?.[0] || ""}`.toUpperCase();
+    const initials = `${formData.first_name?.[0] || ""}${formData.last_name?.[0] || ""}`.toUpperCase();
 
     return (
         <div className="space-y-8">
             {/* Header Section */}
-            <div className="relative h-48 bg-gradient-to-r from-sky-600 to-teal-600 rounded-3xl overflow-hidden shadow-xl shadow-sky-500/10 mb-20 animate-in fade-in slide-in-from-top-4 duration-700">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-                <div className="absolute -bottom-16 left-10 p-2 bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl">
+            <div className="relative h-24 bg-sky-600 rounded-xl overflow-hidden shadow-xl shadow-sky-500/10 animate-in fade-in slide-in-from-top-4 duration-700 mb-5 flex items-center gap-5 pl-5">
+                <div className="p-2 bg-white rounded-4xl shadow-2xl">
                     <div className="relative group">
-                        <div className="h-40 w-40 rounded-[2rem] bg-gradient-to-br from-slate-200 to-slate-100 dark:from-slate-800 dark:to-slate-700 border-4 border-white dark:border-slate-900 flex items-center justify-center overflow-hidden shadow-inner">
-                            {profile?.profile_image ? (
-                                <img src={profile.profile_image} alt="Profile" className="h-full w-full object-cover" />
-                            ) : (
-                                <span className="text-5xl font-extrabold text-slate-400 dark:text-slate-500">{initials}</span>
-                            )}
-                        </div>
-                        <button className="absolute bottom-2 right-2 p-3 bg-sky-600 hover:bg-sky-500 text-white rounded-2xl shadow-lg border-4 border-white dark:border-slate-900 transition-all transform hover:scale-110">
-                            <Camera className="h-5 w-5" />
-                        </button>
+                        <User className="h-12 w-12 text-sky-600" />
                     </div>
                 </div>
 
-                <div className="absolute bottom-4 left-60 hidden md:block text-white">
+                <div className="hidden md:block text-white">
                     <div className="flex items-center gap-2 mb-1">
-                        <h1 className="text-3xl font-bold">{user?.profile?.first_name} {user?.profile?.last_name}</h1>
-                        <BadgeCheck className="h-6 w-6 text-sky-200" />
+                        <h1 className="text-2xl font-bold">{formData.first_name} {formData.last_name}</h1>
+                        <BadgeCheck className="h-5 w-5 text-sky-200" />
                     </div>
-                    <div className="flex items-center gap-4 text-sky-50/80 font-medium">
-                        <span className="flex items-center gap-1.5 capitalize"><ShieldCheck className="h-4 w-4" /> {role}</span>
+                    <div className="flex items-center gap-4 text-sky-50/80 text-sm font-medium">
+                        <span className="flex items-center gap-1.5 capitalize"><ShieldCheck className="h-3.5 w-3.5" /> {role}</span>
                         <div className="h-1 w-1 rounded-full bg-white/40" />
-                        <span className="flex items-center gap-1.5"><Mail className="h-4 w-4" /> {user?.email}</span>
+                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> {user?.email}</span>
                     </div>
                 </div>
             </div>
@@ -101,9 +91,8 @@ export default function ProfilePage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
                 {/* Left Column - Stats/Quick Info */}
                 <div className="space-y-6">
-                    <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden group">
-                        <div className="h-2 w-full bg-sky-600" />
-                        <CardHeader>
+                    <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden group pt-0">
+                        <CardHeader className="pt-2">
                             <CardTitle className="text-lg">Personal Rank</CardTitle>
                             <CardDescription>Role and Designation</CardDescription>
                         </CardHeader>
@@ -143,32 +132,21 @@ export default function ProfilePage() {
                             )}
                         </CardContent>
                     </Card>
-
-                    <Button
-                        variant="outline"
-                        className="w-full h-14 rounded-2xl border-slate-200 dark:border-slate-800 text-slate-500 font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all"
-                    >
-                        View Public Profile
-                    </Button>
                 </div>
 
                 {/* Right Column - Main Form */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-5">
                     <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900">
-                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-8">
+                        <CardHeader className="border-b border-slate-50 dark:border-slate-800 pb-0">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <CardTitle className="text-2xl font-bold">Profile Details</CardTitle>
                                     <CardDescription>Manage your personal information and contact details</CardDescription>
                                 </div>
-                                <div className="hidden sm:flex items-center gap-2 p-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl">
-                                    <Button variant="ghost" size="sm" className="rounded-lg text-xs font-bold">Details</Button>
-                                    <Button variant="ghost" size="sm" className="rounded-lg text-xs font-bold text-slate-400">Security</Button>
-                                </div>
                             </div>
                         </CardHeader>
-                        <CardContent className="pt-10">
-                            <form onSubmit={handleSubmit} className="space-y-10">
+                        <CardContent className="">
+                            <form onSubmit={handleSubmit} className="space-y-5">
                                 {/* Name Section */}
                                 <div className="space-y-6">
                                     <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">Full Identity</h3>
@@ -223,7 +201,7 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
                                     <div className="relative">
-                                        <MapPin className="absolute left-4 top-6 h-4 w-4 text-slate-400" />
+                                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                                         <FloatingLabelInput
                                             id="address"
                                             label="Current Address"
@@ -258,7 +236,7 @@ export default function ProfilePage() {
                                 <div className="flex justify-end pt-4">
                                     <Button
                                         type="submit"
-                                        className="h-14 px-12 rounded-2xl bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700 shadow-lg shadow-sky-500/25 transition-all text-base font-bold"
+                                        size="xxl"
                                         disabled={isUpdating}
                                     >
                                         {isUpdating ? (
