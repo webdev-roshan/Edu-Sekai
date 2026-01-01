@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
+import { AnyProfile, InstitutionProfile } from "@/types/Profile";
 
-async function getMyProfile() {
-    const { data } = await axiosInstance.get("/profiles/me/");
+async function getMyProfile(): Promise<AnyProfile> {
+    const { data } = await axiosInstance.get<AnyProfile>("/profiles/me/");
     return data;
 }
 
-async function updateMyProfile(payload: any) {
-    const { data } = await axiosInstance.patch("/profiles/me/", payload);
+async function updateMyProfile(payload: Partial<AnyProfile>): Promise<AnyProfile> {
+    const { data } = await axiosInstance.patch<AnyProfile>("/profiles/me/", payload);
     return data;
 }
 
@@ -34,8 +35,8 @@ export function useUpdateProfile() {
     });
 }
 
-async function checkSubdomain(subdomain: string) {
-    const { data } = await axiosInstance.get(`/organizations/check-domain/?domain=${subdomain}`);
+async function checkSubdomain(subdomain: string): Promise<boolean> {
+    const { data } = await axiosInstance.get<{ exists: boolean }>(`/organizations/check-domain/?domain=${subdomain}`);
     return data.exists;
 }
 
@@ -45,13 +46,13 @@ export function useCheckSubdomain() {
     });
 }
 
-async function getInstitutionProfile() {
-    const { data } = await axiosInstance.get("/profiles/institution/");
+async function getInstitutionProfile(): Promise<InstitutionProfile> {
+    const { data } = await axiosInstance.get<InstitutionProfile>("/profiles/institution/");
     return data;
 }
 
-async function updateInstitutionProfile(payload: any) {
-    const { data } = await axiosInstance.patch("/profiles/institution/", payload);
+async function updateInstitutionProfile(payload: Partial<InstitutionProfile>): Promise<InstitutionProfile> {
+    const { data } = await axiosInstance.patch<InstitutionProfile>("/profiles/institution/", payload);
     return data;
 }
 

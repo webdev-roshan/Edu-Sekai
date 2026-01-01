@@ -7,8 +7,9 @@ import * as z from "zod";
 import { Loader2, GraduationCap, CheckCircle, Shield, Zap, Users } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { useInitPayment } from "@/hooks/payments";
+import { useInitPayment, useVerifyEmail, useCheckDomain } from "@/hooks/payments";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
     Form,
     FormControl,
@@ -45,8 +46,11 @@ export default function GetStartedPage() {
     const [step, setStep] = useState<"form" | "payment">("form");
     const [formData, setFormData] = useState<FormValues | null>(null);
     const [paymentData, setPaymentData] = useState<any>(null);
+    const [isChecking, setIsChecking] = useState(false);
 
-    const { mutateAsync: initPayment, isPending: isInitializing } = useInitPayment();
+    const { mutateAsync: initPayment } = useInitPayment();
+    const { mutateAsync: verifyEmail } = useVerifyEmail();
+    const { mutateAsync: checkDomain } = useCheckDomain();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(formSchema),
@@ -60,7 +64,25 @@ export default function GetStartedPage() {
     });
 
     async function onFormSubmit(values: FormValues) {
+        setIsChecking(true);
         try {
+            // 1. Check Subdomain
+            const domainResult = await checkDomain(values.subdomain);
+            if (domainResult.exists) {
+                form.setError("subdomain", { message: "This subdomain is already taken." });
+                setIsChecking(false);
+                return;
+            }
+
+            // 2. Check Email and Password
+            const emailResult = await verifyEmail({ email: values.email, password: values.password });
+            if (emailResult.exists && !emailResult.valid_password) {
+                form.setError("password", { message: "Account exists but password is incorrect." });
+                setIsChecking(false);
+                return;
+            }
+
+            // 3. Proceed to Payment Init
             const payload = {
                 organization_name: values.organizationName,
                 subdomain: values.subdomain,
@@ -73,8 +95,11 @@ export default function GetStartedPage() {
             setFormData(values);
             setPaymentData(response);
             setStep("payment");
-        } catch (error) {
-            console.error("Payment initialization error", error);
+        } catch (error: any) {
+            console.error("Validation or Payment error", error);
+            toast.error(error.response?.data?.error || "Something went wrong. Please try again.");
+        } finally {
+            setIsChecking(false);
         }
     }
 
@@ -295,9 +320,9 @@ export default function GetStartedPage() {
                                     <Button
                                         type="submit"
                                         className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700"
-                                        disabled={isInitializing}
+                                        disabled={isChecking}
                                     >
-                                        {isInitializing ? (
+                                        {isChecking ? (
                                             <>
                                                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                                                 Processing...
@@ -353,9 +378,9 @@ export default function GetStartedPage() {
                                 <Button
                                     className="w-full h-12 text-base font-semibold bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                                     onClick={handleEsewaPayment}
-                                    disabled={isInitializing}
+                                    disabled={isChecking}
                                 >
-                                    {isInitializing ? (
+                                    {isChecking ? (
                                         <>
                                             <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                                             Processing...
@@ -372,7 +397,7 @@ export default function GetStartedPage() {
                                     variant="outline"
                                     className="w-full h-12 border-slate-300"
                                     onClick={() => setStep("form")}
-                                    disabled={isInitializing}
+                                    disabled={isChecking}
                                 >
                                     Back to Details
                                 </Button>

@@ -12,8 +12,9 @@ async function logout(): Promise<void> {
     await axiosInstance.post("/auth/logout/");
 }
 
-async function getMe(): Promise<User> {
-    const { data } = await axiosInstance.get<User>("/auth/me/");
+async function getMe(active_role?: string | null): Promise<User> {
+    const url = active_role ? `/auth/me/?active_role=${active_role}` : "/auth/me/";
+    const { data } = await axiosInstance.get<User>(url);
     return data;
 }
 
@@ -23,6 +24,7 @@ export function useLogin() {
         mutationFn: login,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["me"] });
+            localStorage.removeItem("active_role");
             toast.success("Logged in successfully");
         },
         onError: (error: any) => {
@@ -37,6 +39,7 @@ export function useLogout() {
         mutationFn: logout,
         onSuccess: () => {
             queryClient.setQueryData(["me"], null);
+            localStorage.removeItem("active_role");
             toast.success("Logged out successfully");
             window.location.href = "/login";
         }
@@ -44,9 +47,11 @@ export function useLogout() {
 }
 
 export function useMe() {
+    const active_role = typeof window !== 'undefined' ? localStorage.getItem("active_role") : null;
+
     return useQuery({
-        queryKey: ["me"],
-        queryFn: getMe,
+        queryKey: ["me", active_role],
+        queryFn: () => getMe(active_role),
         retry: false,
         staleTime: 1000 * 60 * 5, // 5 minutes
     });

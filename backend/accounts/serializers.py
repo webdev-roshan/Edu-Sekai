@@ -40,8 +40,7 @@ class OrganizationRegisterSerializer(serializers.Serializer):
     subdomain = serializers.SlugField(max_length=50)
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True, min_length=8)
-    first_name = serializers.CharField(max_length=50, required=False)
-    last_name = serializers.CharField(max_length=50, required=False)
+    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
 
     def validate_subdomain(self, value):
         if Organization.objects.filter(schema_name=value).exists():
@@ -49,8 +48,7 @@ class OrganizationRegisterSerializer(serializers.Serializer):
         return value
 
     def validate_email(self, value):
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError("This email is already registered.")
+        # We allow existing users to register new organizations
         return value
 
     def create(self, validated_data):
@@ -58,14 +56,16 @@ class OrganizationRegisterSerializer(serializers.Serializer):
         subdomain = validated_data["subdomain"]
         email = validated_data["email"]
         password = validated_data["password"]
+        phone = validated_data.get("phone", "")
 
         base_domain = "localhost"
         full_domain_name = f"{subdomain}.{base_domain}"
 
         with transaction.atomic():
+            # 1. Create Organization
             organization = Organization.objects.create(
                 name=org_name,
-                schema_name=subdomain,  # Using subdomain as schema name
+                schema_name=subdomain,
             )
 
             # 2. Create Domain
@@ -73,8 +73,18 @@ class OrganizationRegisterSerializer(serializers.Serializer):
                 domain=full_domain_name, tenant=organization, is_primary=True
             )
 
-            # 3. Create User (in Public Schema - User is Shared)
-            user = User.objects.create_user(email=email, password=password)
+            # 3. Handle User (Shared in Public Schema)
+            user = User.objects.filter(email=email).first()
+            if user:
+                # Security: Verify password if user exists
+                if not user.check_password(password):
+                    raise serializers.ValidationError(
+                        {
+                            "password": "Password does not match existing account for this email."
+                        }
+                    )
+            else:
+                user = User.objects.create_user(email=email, password=password)
 
             # 4. Create "Owner" Role if not exists (Public Schema)
             owner_role, _ = Role.objects.get_or_create(
@@ -82,36 +92,23 @@ class OrganizationRegisterSerializer(serializers.Serializer):
             )
 
             # 5. Link User to Org with Role (Public Schema)
+            # This triggers profiles/signals.py to auto-create StaffProfile and InstitutionProfile
             UserRole.objects.create(
                 user=user, organization=organization, role=owner_role
             )
 
-            # Note: We might want to create a Profile inside the Tenant Schema?
-            # If Profiles are in TENANT_APPS, we must context-switch to create it.
-            # But the User is global. The profile depends on the Tenant.
-            # Let's create a minimal Owner Profile inside the tenant.
-
+            # 6. Update the auto-created personal profile with the user's phone
+            from profiles.models import StaffProfile
             from django_tenants.utils import tenant_context
-            from profiles.models import StaffProfile, InstitutionProfile
 
             with tenant_context(organization):
-                # 1. Create Owner Staff Profile
-                StaffProfile.objects.create(
-                    user=user,
-                    organization=organization,
-                    first_name=validated_data.get("first_name", ""),
-                    last_name=validated_data.get("last_name", ""),
-                    employee_id="OWNER-001",
-                    designation="Owner / Administrator",
-                    department="Administration",
-                )
-
-                # 2. Create Institution Profile
-                InstitutionProfile.objects.create(organization=organization)
+                StaffProfile.objects.filter(
+                    user=user, organization=organization
+                ).update(phone=phone)
 
         return {
             "organization": organization,
             "domain": domain,
             "user": user,
-            "domain_url": f"http://{full_domain_name}:3555/login",  # redirect to tenant dashboard login
+            "domain_url": f"http://{full_domain_name}:3555/login",
         }

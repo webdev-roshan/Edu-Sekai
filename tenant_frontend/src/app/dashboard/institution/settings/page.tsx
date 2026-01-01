@@ -17,14 +17,12 @@ import {
     Instagram,
     Twitter,
     Linkedin,
-    Info,
-    Rocket,
-    Target,
     Compass,
-    Image as ImageIcon
+    Image as ImageIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { InstitutionProfile } from "@/types/Profile";
 
 export default function InstitutionSettingsPage() {
     const { data: user } = useMe();
@@ -32,7 +30,7 @@ export default function InstitutionSettingsPage() {
     const { mutate: updateProfile, isPending: isUpdating } = useUpdateInstitutionProfile();
     const router = useRouter();
 
-    const [formData, setFormData] = useState<any>({});
+    const [formData, setFormData] = useState<Partial<InstitutionProfile>>({});
 
     useEffect(() => {
         if (profile) {
@@ -41,7 +39,7 @@ export default function InstitutionSettingsPage() {
     }, [profile]);
 
     // Role check: Only owners can edit
-    const isOwner = user?.roles?.includes("owner") || user?.roles?.includes("staff");
+    const isOwner: boolean = !!(user?.roles?.includes("owner") || user?.roles?.includes("staff"));
 
     if (isLoading) {
         return (
@@ -140,12 +138,38 @@ export default function InstitutionSettingsPage() {
                         </CardHeader>
                         <CardContent className="space-y-5">
                             <FloatingLabelInput
+                                id="name"
+                                label="Institutional Name"
+                                value={formData.name || ""}
+                                onChange={handleChange}
+                                placeholder="e.g. Edu Sekai Academy"
+                            />
+
+                            <FloatingLabelInput
                                 id="tagline"
                                 label="Institutional Tagline"
                                 value={formData.tagline || ""}
                                 onChange={handleChange}
                                 placeholder="Empowering the leaders of tomorrow"
                             />
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <FloatingLabelInput
+                                    id="email"
+                                    label="Official School Email"
+                                    type="email"
+                                    value={formData.email || ""}
+                                    onChange={handleChange}
+                                    placeholder="info@school.edu"
+                                />
+                                <FloatingLabelInput
+                                    id="phone"
+                                    label="Official School Phone"
+                                    value={formData.phone || ""}
+                                    onChange={handleChange}
+                                    placeholder="+1 (234) 567-890"
+                                />
+                            </div>
 
                             <div className="space-y-3">
                                 <Label htmlFor="about" className="text-xs uppercase font-extrabold text-slate-400 tracking-widest pl-1">About the school</Label>

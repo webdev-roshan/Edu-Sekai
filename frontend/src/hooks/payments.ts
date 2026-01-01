@@ -47,3 +47,25 @@ export function useVerifyPayment() {
         },
     });
 }
+
+async function verifyEmail(payload: { email: string; password?: string }): Promise<{ exists: boolean; valid_password: boolean }> {
+    const { data } = await axiosInstance.post<{ exists: boolean; valid_password: boolean }>("/auth/verify-email/", payload);
+    return data;
+}
+
+export function useVerifyEmail() {
+    return useMutation({
+        mutationFn: verifyEmail,
+    });
+}
+
+async function checkDomain(subdomain: string): Promise<{ exists: boolean }> {
+    const { data } = await axiosInstance.get<{ exists: boolean }>(`/organizations/check-domain/?domain=${subdomain}`);
+    return data;
+}
+
+export function useCheckDomain() {
+    return useMutation({
+        mutationFn: checkDomain,
+    });
+}

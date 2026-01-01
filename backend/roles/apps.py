@@ -2,4 +2,7 @@ from django.apps import AppConfig
 
 
 class RolesConfig(AppConfig):
-    name = 'roles'
+    name = "roles"
+
+    def ready(self):
+        import roles.signals

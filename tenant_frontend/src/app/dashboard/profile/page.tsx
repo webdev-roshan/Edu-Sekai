@@ -16,18 +16,19 @@ import {
     MapPin,
     Briefcase,
     BookOpen,
-    Camera,
     ShieldCheck,
-    BadgeCheck
+    BadgeCheck,
+    ImageIcon
 } from "lucide-react";
 import { toast } from "sonner";
+import { AnyProfile, StaffProfile, StudentProfile } from "@/types/Profile";
 
 export default function ProfilePage() {
     const { data: user } = useMe();
     const { data: profile, isLoading } = useProfile();
     const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
 
-    const [formData, setFormData] = useState<any>({});
+    const [formData, setFormData] = useState<Partial<AnyProfile>>({});
 
     useEffect(() => {
         if (profile) {
@@ -83,7 +84,7 @@ export default function ProfilePage() {
                     <div className="flex items-center gap-4 text-sky-50/80 text-sm font-medium">
                         <span className="flex items-center gap-1.5 capitalize"><ShieldCheck className="h-3.5 w-3.5" /> {role}</span>
                         <div className="h-1 w-1 rounded-full bg-white/40" />
-                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> {user?.email}</span>
+                        <span className="flex items-center gap-1.5"><Mail className="h-3.5 w-3.5" /> {profile?.email}</span>
                     </div>
                 </div>
             </div>
@@ -103,18 +104,22 @@ export default function ProfilePage() {
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Designation</p>
-                                    <p className="font-bold text-slate-700 dark:text-slate-200">{formData.designation || (role === 'student' ? 'Student' : 'Staff Member')}</p>
+                                    <p className="font-bold text-slate-700 dark:text-slate-200">
+                                        {(formData as StaffProfile).designation || (role === 'student' ? 'Student' : 'Staff Member')}
+                                    </p>
                                 </div>
                             </div>
 
-                            {profile?.employee_id && (
+                            {((profile as StaffProfile).employee_id || (profile as StudentProfile).enrollment_id) && (
                                 <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-800 flex items-center gap-4">
                                     <div className="p-3 bg-teal-100 dark:bg-teal-500/10 text-teal-600 rounded-xl">
                                         <BadgeCheck className="h-6 w-6" />
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">ID Reference</p>
-                                        <p className="font-bold text-slate-700 dark:text-slate-200">{profile.employee_id || profile.enrollment_id}</p>
+                                        <p className="font-bold text-slate-700 dark:text-slate-200">
+                                            {(profile as StaffProfile).employee_id || (profile as StudentProfile).enrollment_id}
+                                        </p>
                                     </div>
                                 </div>
                             )}
@@ -126,10 +131,34 @@ export default function ProfilePage() {
                                     </div>
                                     <div>
                                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Level</p>
-                                        <p className="font-bold text-slate-700 dark:text-slate-200">{formData.current_level || 'Not Set'}</p>
+                                        <p className="font-bold text-slate-700 dark:text-slate-200">{(formData as StudentProfile).current_level || 'Not Set'}</p>
                                     </div>
                                 </div>
                             )}
+                        </CardContent>
+                    </Card>
+
+                    <Card className="border-none shadow-xl shadow-slate-200/50 dark:shadow-none dark:bg-slate-900 overflow-hidden pt-0">
+                        <CardHeader className="pt-2">
+                            <CardTitle className="text-lg">Profile Picture</CardTitle>
+                            <CardDescription>Visual identity of yourself</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            <div className="space-y-4">
+                                <div className="aspect-square bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden">
+                                    {formData.profile_image ? (
+                                        <img src={formData.profile_image} alt="Profile" className="w-full h-full object-contain p-4" />
+                                    ) : (
+                                        <>
+                                            <ImageIcon className="h-10 w-10 text-slate-300 mb-2 group-hover:scale-110 transition-transform" />
+                                            <span className="text-xs font-bold text-slate-400">Click to upload</span>
+                                        </>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                                        <Button variant="default" size="lg" className="font-bold">Choose Image</Button>
+                                    </div>
+                                </div>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
@@ -171,6 +200,20 @@ export default function ProfilePage() {
                                             onChange={handleChange}
                                             required
                                         />
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="relative">
+                                            <div className="relative">
+                                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                                <FloatingLabelInput
+                                                    id="email"
+                                                    label="Personal Email"
+                                                    className="pl-12"
+                                                    value={formData.email || ""}
+                                                    onChange={handleChange}
+                                                />
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -220,13 +263,13 @@ export default function ProfilePage() {
                                             <FloatingLabelInput
                                                 id="guardian_name"
                                                 label="Guardian's Name"
-                                                value={formData.guardian_name || ""}
+                                                value={(formData as StudentProfile).guardian_name || ""}
                                                 onChange={handleChange}
                                             />
                                             <FloatingLabelInput
                                                 id="guardian_phone"
                                                 label="Guardian's Phone"
-                                                value={formData.guardian_phone || ""}
+                                                value={(formData as StudentProfile).guardian_phone || ""}
                                                 onChange={handleChange}
                                             />
                                         </div>

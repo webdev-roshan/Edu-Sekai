@@ -13,6 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
+import Logo from "@/components/Logo";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -32,15 +33,10 @@ export default function LoginPage() {
     return (
         <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
             {/* Left Side - Information (Hidden on mobile) */}
-            <div className="hidden lg:flex lg:w-5/12 bg-gradient-to-br from-sky-600 to-teal-600 p-12 flex-col justify-between text-white relative overflow-hidden">
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
-
+            <div className="hidden lg:flex lg:w-5/12 bg-sky-600 p-12 flex-col justify-between text-white relative overflow-hidden">
                 <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-16 animate-in slide-in-from-left duration-700">
-                        <div className="p-2 bg-white/20 rounded-lg backdrop-blur-md">
-                            <GraduationCap className="h-10 w-10 text-white" />
-                        </div>
-                        <span className="text-3xl font-bold tracking-tight text-white">Edu Sekai</span>
+                    <div className="flex items-center gap-3 mb-12 animate-in slide-in-from-left duration-700">
+                        <Logo width={200} height={200} />
                     </div>
 
                     <div className="space-y-10">
@@ -56,11 +52,11 @@ export default function LoginPage() {
                     </div>
                 </div>
 
-                <div className="relative z-10 pt-12 border-t border-white/20 flex justify-between items-center text-sky-100/60 text-sm">
+                <div className="relative z-10 pt-12 border-t border-white/20 flex justify-between items-center text-white text-sm">
                     <p>© 2025 Edu Sekai Ltd.</p>
                     <div className="flex gap-4">
-                        <a href="#" className="hover:text-white transition-colors">Privacy</a>
-                        <a href="#" className="hover:text-white transition-colors">Terms</a>
+                        <a href="#">Privacy</a>
+                        <a href="#">Terms</a>
                     </div>
                 </div>
             </div>
@@ -76,7 +72,7 @@ export default function LoginPage() {
                         <p className="text-slate-500 dark:text-slate-400">Institutional Login</p>
                     </div>
 
-                    <Card className="border-none shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md outline outline-1 outline-slate-200/50 dark:outline-slate-800/50">
+                    <Card className="border-none shadow-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md outline-slate-200/50 dark:outline-slate-800/50">
                         <CardHeader className="space-y-2 pb-6">
                             <CardTitle className="text-2xl font-bold text-slate-900 dark:text-white">Welcome Back</CardTitle>
                             <CardDescription className="text-slate-600 dark:text-slate-400">
@@ -114,7 +110,8 @@ export default function LoginPage() {
 
                                 <Button
                                     type="submit"
-                                    className="w-full h-12 text-base font-bold bg-gradient-to-r from-sky-600 to-teal-600 hover:from-sky-700 hover:to-teal-700 transition-all duration-300 shadow-lg shadow-sky-500/25"
+                                    size="xl"
+                                    className="w-full "
                                     disabled={isLoading}
                                 >
                                     {isLoading ? (

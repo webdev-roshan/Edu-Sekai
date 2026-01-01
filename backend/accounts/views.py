@@ -83,17 +83,17 @@ class MeView(APIView):
     def get(self, request):
         user = request.user
         tenant = getattr(request, "tenant", None)
+        requested_role = request.query_params.get("active_role")
 
         data = {
             "id": user.id,
-            "email": user.email,
             "is_active": user.is_active,
             "profile": None,
             "roles": [],
+            "active_role": None,
         }
 
         if tenant and tenant.schema_name != "public":
-            # 1. Fetch Roles for this tenant (select_related for efficiency)
             from roles.models import UserRole
 
             role_objects = UserRole.objects.filter(
@@ -103,7 +103,17 @@ class MeView(APIView):
             role_slugs = [ur.role.slug for ur in role_objects]
             data["roles"] = role_slugs
 
-            # 2. Fetch Profile based on role priority
+            # Determine Active Role
+            # If requested role is valid for this user, use it; otherwise default to first available
+            active_role = None
+            if requested_role in role_slugs:
+                active_role = requested_role
+            elif role_slugs:
+                active_role = role_slugs[0]
+
+            data["active_role"] = active_role
+
+            # Fetch Profile based on active_role
             from profiles.models import StudentProfile, InstructorProfile, StaffProfile
             from profiles.serializers import (
                 StudentProfileSerializer,
@@ -111,23 +121,43 @@ class MeView(APIView):
                 StaffProfileSerializer,
             )
 
-            profile = None
-            # Check for high-privilege management roles first
-            if any(role in ["owner", "staff"] for role in role_slugs):
+            if active_role in ["owner", "staff"]:
                 profile = StaffProfile.objects.filter(user=user).first()
                 if profile:
                     data["profile"] = StaffProfileSerializer(profile).data
-
-            # Then Instruction
-            if not data["profile"] and "instructor" in role_slugs:
+            elif active_role == "instructor":
                 profile = InstructorProfile.objects.filter(user=user).first()
                 if profile:
                     data["profile"] = InstructorProfileSerializer(profile).data
-
-            # Finally Students
-            if not data["profile"] and "student" in role_slugs:
+            elif active_role == "student":
                 profile = StudentProfile.objects.filter(user=user).first()
                 if profile:
                     data["profile"] = StudentProfileSerializer(profile).data
 
         return Response(data)
+
+
+class VerifyEmailView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+
+        if not email:
+            return Response(
+                {"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        from accounts.models import User
+
+        user = User.objects.filter(email=email).first()
+
+        if not user:
+            return Response({"exists": False, "valid_password": False})
+
+        if not password:
+            return Response({"exists": True, "valid_password": False})
+
+        is_valid = user.check_password(password)
+        return Response({"exists": True, "valid_password": is_valid})
