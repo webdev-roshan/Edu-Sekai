@@ -29,13 +29,9 @@ SHARED_APPS = (
     "roles",
     "organizations",
     "payments",
-    "profiles",
 )
 
-TENANT_APPS = (
-    "profiles",
-    # Add other tenant-specific apps here
-)
+TENANT_APPS = ("profiles",)
 
 INSTALLED_APPS = list(SHARED_APPS) + [
     app for app in TENANT_APPS if app not in SHARED_APPS

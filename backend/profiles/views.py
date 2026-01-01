@@ -65,7 +65,14 @@ class MyProfileView(APIView):
 
 
 class InstitutionProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    def get_permissions(self):
+        from roles.permissions import HasPermission
+
+        if self.request.method == "GET":
+            return [IsAuthenticated(), HasPermission("view_institution_profile")]
+        elif self.request.method == "PATCH":
+            return [IsAuthenticated(), HasPermission("edit_institution_profile")]
+        return [IsAuthenticated()]
 
     def get_object(self):
         tenant = getattr(connection, "tenant", None)
@@ -82,8 +89,6 @@ class InstitutionProfileView(APIView):
         return Response(serializer.data)
 
     def patch(self, request):
-        # We should ideally check if the user is an owner/admin here
-        # For now, let's assume IsAuthenticated + Owner check in the future logic
         profile = self.get_object()
         if not profile:
             return Response(

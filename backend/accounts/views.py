@@ -112,6 +112,24 @@ class MeView(APIView):
                 active_role = role_slugs[0]
 
             data["active_role"] = active_role
+            data["permissions"] = []
+
+            if active_role:
+                # Find the UserRole object for the active role to get the relation
+                # We already fetched them in role_objects, let's find the matching one
+                active_user_role = next(
+                    (ur for ur in role_objects if ur.role.slug == active_role), None
+                )
+
+                if active_user_role:
+                    if active_user_role.role.slug == "owner":
+                        data["permissions"] = ["*"]  # Superuser wildcard
+                    else:
+                        data["permissions"] = list(
+                            active_user_role.role.permissions.values_list(
+                                "codename", flat=True
+                            )
+                        )
 
             # Fetch Profile based on active_role
             from profiles.models import StudentProfile, InstructorProfile, StaffProfile

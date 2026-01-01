@@ -8,6 +8,7 @@ import { SidebarItem } from "@/components/dashboard/Sidebar/SidebarItem";
 import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import { getMenuItems } from "@/components/dashboard/Sidebar/MenuItems";
+import { usePermissions } from "@/providers/PermissionProvider";
 
 interface SidebarProps {
     user: any;
@@ -16,7 +17,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ user, isCollapsed, setIsCollapsed }: SidebarProps) {
-    const menuItems = getMenuItems(user);
+    const { can } = usePermissions();
+    const menuItems = getMenuItems(user, can);
 
 
     return (

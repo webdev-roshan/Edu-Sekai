@@ -48,7 +48,7 @@ class BaseProfile(models.Model):
 
 
 class StudentProfile(BaseProfile):
-    enrollment_id = models.CharField(max_length=30)
+    enrollment_id = models.CharField(max_length=50)
     current_level = models.CharField(max_length=50)
     section = models.CharField(max_length=10, blank=True)
 
@@ -67,7 +67,7 @@ class StudentProfile(BaseProfile):
 
 
 class InstructorProfile(BaseProfile):
-    employee_id = models.CharField(max_length=30)
+    employee_id = models.CharField(max_length=50)
     specialization = models.CharField(max_length=100)
     qualification = models.CharField(max_length=100, blank=True)
     years_of_experience = models.PositiveIntegerField(default=0)
@@ -82,7 +82,7 @@ class InstructorProfile(BaseProfile):
 
 
 class StaffProfile(BaseProfile):
-    employee_id = models.CharField(max_length=30)
+    employee_id = models.CharField(max_length=50)
     designation = models.CharField(max_length=100)
     department = models.CharField(max_length=100, blank=True)
     joining_date = models.DateField(null=True, blank=True)

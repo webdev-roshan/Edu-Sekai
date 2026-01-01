@@ -22,28 +22,29 @@ def create_profile_for_role(sender, instance, created, **kwargs):
     org = instance.organization
     role_slug = instance.role.slug
 
-    if role_slug == "student":
-        StudentProfile.objects.get_or_create(
-            user=user,
-            organization=org,
-            defaults={"enrollment_id": f"STD-{user.id}"},
-        )
+    with tenant_context(org):
+        if role_slug == "student":
+            StudentProfile.objects.get_or_create(
+                user=user,
+                organization=org,
+                defaults={"enrollment_id": f"STD-{str(user.id)[:8].upper()}"},
+            )
 
-    elif role_slug == "instructor":
-        InstructorProfile.objects.get_or_create(
-            user=user,
-            organization=org,
-            defaults={"employee_id": f"EMP-{user.id}"},
-        )
+        elif role_slug == "instructor":
+            InstructorProfile.objects.get_or_create(
+                user=user,
+                organization=org,
+                defaults={"employee_id": f"EMP-{str(user.id)[:8].upper()}"},
+            )
 
-    elif role_slug == "staff" or role_slug == "owner":
-        StaffProfile.objects.get_or_create(
-            user=user,
-            organization=org,
-            defaults={
-                "employee_id": f"EMP-{user.id}",
-                "designation": (
-                    "Owner / Administrator" if role_slug == "owner" else "Staff"
-                ),
-            },
-        )
+        elif role_slug == "staff" or role_slug == "owner":
+            StaffProfile.objects.get_or_create(
+                user=user,
+                organization=org,
+                defaults={
+                    "employee_id": f"EMP-{str(user.id)[:8].upper()}",
+                    "designation": (
+                        "Owner / Administrator" if role_slug == "owner" else "Staff"
+                    ),
+                },
+            )
