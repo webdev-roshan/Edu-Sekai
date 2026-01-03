@@ -80,11 +80,21 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django_tenants.postgresql_backend",
-        "NAME": config("DB_NAME", default="schoolsansar"),
-        "USER": config("DB_USER", default=""),
-        "PASSWORD": config("DB_PASSWORD", default=""),
-        "HOST": config("DB_HOST", default=""),
-        "PORT": config("DB_PORT", default=""),
+        "NAME": config(
+            "DB_NAME",
+        ),
+        "USER": config(
+            "DB_USER",
+        ),
+        "PASSWORD": config(
+            "DB_PASSWORD",
+        ),
+        "HOST": config(
+            "DB_HOST",
+        ),
+        "PORT": config(
+            "DB_PORT",
+        ),
     }
 }
 

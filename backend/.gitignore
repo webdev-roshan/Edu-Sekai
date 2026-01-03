@@ -4,38 +4,36 @@ __pycache__/
 *$py.class
 
 # Environment
-# .env
-# *.env
-# venv/
-# env/
-# .venv/
+.env
+*.env
+venv/
+env/
+.venv/
+.env.example
 
-# Django stuff:
+# Django stuff
 *.log
 *.pot
 *.pyc
 db.sqlite3
 db.sqlite3-journal
 media/
+staticfiles/
 
 # Migrations
-# */migrations/*.py
-# */migrations/*.pyc
-# !*/migrations/__init__.py
+*/migrations/*.py
+*/migrations/*.pyc
+!*/migrations/__init__.py
 
-# VS Code
+# IDEs
 .vscode/
-
-# PyCharm
 .idea/
 
-# MacOS
+# OS files
 .DS_Store
-
-# Linux
 *~
 
-# Coverage reports
+# Coverage / testing
 htmlcov/
 .coverage
 .coverage.*
@@ -45,8 +43,6 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-
-# Pytest
 .pytest_cache/
 
 # Celery
@@ -55,8 +51,14 @@ celerybeat.pid
 
 # Docker
 *.pid
-*.log
 docker-compose.override.yml
+
+# Local DB folders
+postgres-data/
+pgdata/
+mongo-data/
+redis-data/
+data/
 
 # Other
 *.sqlite3
