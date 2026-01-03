@@ -9,7 +9,7 @@ __pycache__/
 venv/
 env/
 .venv/
-.env.example
+# .env.example
 
 # Django stuff
 *.log
