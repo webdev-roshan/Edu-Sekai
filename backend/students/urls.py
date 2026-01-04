@@ -4,6 +4,7 @@ from .views import (
     StudentListView,
     PortalActivationView,
     CredentialDistributionView,
+    StudentDetailView,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path(
         "credentials/", CredentialDistributionView.as_view(), name="student-credentials"
     ),
+    path("detail/<uuid:pk>/", StudentDetailView.as_view(), name="student-detail"),
 ]

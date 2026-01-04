@@ -1,6 +1,7 @@
 "use client";
 
-import { useStudents } from "@/hooks/useStudents";
+import { useState } from "react";
+import { useStudents, useDeleteStudent } from "@/hooks/useStudents";
 import { usePermissions } from "@/providers/PermissionProvider";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +13,9 @@ import {
     Filter,
     GraduationCap,
     LoaderCircle,
-    Lock
+    Lock,
+    Pencil,
+    Trash2
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -27,13 +30,33 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 import Unauthorized from "@/components/Unauthorized";
 import { cn } from "@/lib/utils";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function StudentsPage() {
     const { can, isOwner } = usePermissions();
     const { data: students, isLoading } = useStudents();
+    const { mutate: deleteStudent } = useDeleteStudent();
+    const [studentToDelete, setStudentToDelete] = useState<string | null>(null);
     const router = useRouter();
 
     const canView = isOwner || can("view_student");
+    const canEdit = isOwner || can("change_student");
+    const canDelete = isOwner || can("delete_student");
 
     if (!canView) {
         return <Unauthorized />;
@@ -149,15 +172,39 @@ export default function StudentsPage() {
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right pr-6">
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48 p-2 rounded-xl">
+                                                    {canEdit && (
+                                                        <DropdownMenuItem
+                                                            onClick={() => router.push(`/dashboard/students/edit/${student.id}`)}
+                                                            className="rounded-lg gap-2 cursor-pointer focus:bg-sky-50 focus:text-sky-600 dark:focus:bg-sky-900/20 dark:focus:text-sky-400"
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {canDelete && (
+                                                        <DropdownMenuItem
+                                                            onClick={() => setStudentToDelete(student.id)}
+                                                            className="rounded-lg gap-2 cursor-pointer text-red-600 focus:bg-red-50 focus:text-red-600 dark:focus:bg-red-900/20"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan={6} className="h-48 text-center">
+                                    <TableCell colSpan={7} className="h-48 text-center">
                                         <div className="flex flex-col items-center justify-center text-slate-400 py-10">
                                             <GraduationCap className="h-12 w-12 mb-2 opacity-20" />
                                             <p className="font-medium">No students found.</p>
@@ -169,6 +216,32 @@ export default function StudentsPage() {
                     </Table>
                 </div>
             </div>
+
+            <AlertDialog open={!!studentToDelete} onOpenChange={(open) => !open && setStudentToDelete(null)}>
+                <AlertDialogContent className="rounded-3xl">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the student profile and their academic records from the system.
+                            {/* We could add logic here to warn if the User account will also be deleted, but that's complex to fetch proactively */}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="rounded-xl h-11">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={() => {
+                                if (studentToDelete) {
+                                    deleteStudent(studentToDelete);
+                                    setStudentToDelete(null);
+                                }
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white rounded-xl h-11"
+                        >
+                            Delete Student
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

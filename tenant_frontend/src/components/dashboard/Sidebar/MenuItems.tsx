@@ -25,14 +25,23 @@ export const getMenuItems = (user: any, can: (permission: string) => boolean): S
     const academicChildren: SidebarItemType[] = [];
 
     if (can("view_student")) {
+        const studentChildren = [
+            { label: "Active Students", href: "/dashboard/students" }
+        ];
+
+        if (can("add_student")) {
+            studentChildren.push({ label: "Admissions", href: "/dashboard/students/admissions" });
+        }
+
+        if (can("activate_student_portal")) {
+            studentChildren.push({ label: "Portal Activation", href: "/dashboard/students/portal-activation" });
+        }
+
         academicChildren.push({
             label: "Students",
             icon: Users,
             href: "/dashboard/students",
-            children: [
-                { label: "Active Students", href: "/dashboard/students" },
-                { label: "Admissions", href: "/dashboard/students/admissions" },
-            ]
+            children: studentChildren
         });
     }
 

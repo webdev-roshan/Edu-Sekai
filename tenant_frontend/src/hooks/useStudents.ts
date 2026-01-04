@@ -116,3 +116,51 @@ export const usePendingCredentials = () => {
         }
     });
 };
+export const useUpdateStudent = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async ({ id, data }: { id: string; data: StudentEnrollmentData }) => {
+            const response = await axiosInstance.put(`/students/detail/${id}/`, data);
+            return response.data;
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["students"] });
+            queryClient.invalidateQueries({ queryKey: ["student", variables.id] });
+            toast.success("Student updated successfully!");
+        },
+        onError: (error: any) => {
+            const message = error.response?.data?.message || "Failed to update student";
+            toast.error(message);
+        }
+    });
+};
+
+export const useDeleteStudent = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (id: string) => {
+            await axiosInstance.delete(`/students/detail/${id}/`);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["students"] });
+            toast.success("Student deleted successfully!");
+        },
+        onError: (error: any) => {
+            const message = error.response?.data?.message || "Failed to delete student";
+            toast.error(message);
+        }
+    });
+};
+
+export const useStudent = (id: string, enabled: boolean = true) => {
+    return useQuery({
+        queryKey: ["student", id],
+        queryFn: async () => {
+            const response = await axiosInstance.get(`/students/detail/${id}/`);
+            return response.data;
+        },
+        enabled: !!id && enabled
+    });
+};

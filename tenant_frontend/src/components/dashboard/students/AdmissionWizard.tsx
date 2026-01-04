@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -8,22 +8,19 @@ import {
     User,
     GraduationCap,
     Users,
-    ArrowRight,
-    ArrowLeft,
     Check,
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { useEnrollStudent, StudentEnrollmentData } from '@/hooks/useStudents';
+import { useEnrollStudent, useUpdateStudent, useStudent, StudentEnrollmentData } from '@/hooks/useStudents';
 import { useRouter } from 'next/navigation';
 
 // Sub-components
 import PersonalDetailsStep from './admission/PersonalDetailsStep';
 import AcademicInfoStep from './admission/AcademicInfoStep';
 import GuardianDetailsStep from './admission/GuardianDetailsStep';
-import ReviewStep from './admission/ReviewStep';
 
 const enrollmentSchema = z.object({
     // Personal Info
@@ -58,17 +55,18 @@ const enrollmentSchema = z.object({
 
 type EnrollmentFormData = z.infer<typeof enrollmentSchema>;
 
-const STEPS = [
-    { title: "Student Details", icon: User },
-    { title: "Academic Info", icon: GraduationCap },
-    { title: "Guardians", icon: Users },
-    { title: "Finalize", icon: Check }
-];
+interface AdmissionWizardProps {
+    studentId?: string;
+}
 
-export default function AdmissionWizard() {
-    const [currentStep, setCurrentStep] = useState(0);
-    const { mutate: enrollStudent, isPending } = useEnrollStudent();
+export default function AdmissionWizard({ studentId }: AdmissionWizardProps) {
+    const { mutate: enrollStudent, isPending: isEnrolling } = useEnrollStudent();
+    const { mutate: updateStudent, isPending: isUpdating } = useUpdateStudent();
+    const { data: studentData, isLoading: isLoadingStudent } = useStudent(studentId as string, !!studentId);
+
     const router = useRouter();
+    const isEditMode = !!studentId;
+    const isPending = isEnrolling || isUpdating;
 
     const form = useForm<EnrollmentFormData>({
         resolver: zodResolver(enrollmentSchema) as any,
@@ -80,148 +78,130 @@ export default function AdmissionWizard() {
         mode: "onBlur"
     });
 
-    const nextStep = async () => {
-        const fieldsToValidate = getFieldsForStep(currentStep);
-        const isValid = await form.trigger(fieldsToValidate as any);
+    React.useEffect(() => {
+        if (studentData) {
+            form.reset({
+                ...studentData,
+                // Ensure parents array is not null
+                parents: studentData.parents || []
+            });
+        }
+    }, [studentData, form]);
 
-        if (isValid) {
-            setCurrentStep(prev => Math.min(prev + 1, STEPS.length - 1));
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    const onSubmit = (data: EnrollmentFormData) => {
+        if (isEditMode) {
+            updateStudent({ id: studentId, data: data as unknown as StudentEnrollmentData }, {
+                onSuccess: () => {
+                    router.push('/dashboard/students');
+                },
+                onError: (error: any) => handleServerErrors(error)
+            });
+        } else {
+            enrollStudent(data as unknown as StudentEnrollmentData, {
+                onSuccess: () => {
+                    router.push('/dashboard/students');
+                },
+                onError: (error: any) => handleServerErrors(error)
+            });
         }
     };
 
-    const prevStep = () => {
-        setCurrentStep(prev => Math.max(prev - 1, 0));
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    const getFieldsForStep = (step: number) => {
-        switch (step) {
-            case 0: return ['first_name', 'last_name', 'gender', 'date_of_birth', 'address'];
-            case 1: return ['level', 'academic_year'];
-            case 2: return ['parents'];
-            default: return [];
+    const handleServerErrors = (error: any) => {
+        const serverErrors = error.response?.data;
+        if (serverErrors && typeof serverErrors === 'object') {
+            Object.keys(serverErrors).forEach((key) => {
+                form.setError(key as any, {
+                    type: 'manual',
+                    message: Array.isArray(serverErrors[key])
+                        ? serverErrors[key][0]
+                        : 'Invalid value'
+                });
+            });
         }
     };
 
-    const onSubmit = async (data: EnrollmentFormData) => {
-        // Prevent submission if not on final step
-        if (currentStep < STEPS.length - 1) {
-            await nextStep();
-            return;
-        }
-
-        enrollStudent(data as unknown as StudentEnrollmentData, {
-            onSuccess: () => {
-                router.push('/dashboard/students');
-            },
-            onError: (error: any) => {
-                // If the error response has field-specific errors, map them to form
-                const serverErrors = error.response?.data;
-                if (serverErrors && typeof serverErrors === 'object') {
-                    Object.keys(serverErrors).forEach((key) => {
-                        form.setError(key as any, {
-                            type: 'manual',
-                            message: Array.isArray(serverErrors[key])
-                                ? serverErrors[key][0]
-                                : 'Invalid value'
-                        });
-                    });
-                }
-            }
-        });
-    };
+    if (isEditMode && isLoadingStudent) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="h-12 w-12 animate-spin text-sky-600" />
+            </div>
+        );
+    }
 
     return (
-        <div className="max-w-6xl mx-auto py-8">
-            {/* Step Indicator */}
-            <div className="flex justify-between mb-16 relative max-w-2xl mx-auto">
-                <div className="absolute top-[22px] left-0 right-0 h-[2px] bg-slate-100 dark:bg-slate-800 z-0" />
-                <div
-                    className="absolute top-[22px] left-0 h-[2px] bg-sky-500 transition-all duration-500 ease-in-out z-0"
-                    style={{ width: `${(currentStep / (STEPS.length - 1)) * 100}%` }}
-                />
-
-                {STEPS.map((step, idx) => {
-                    const Icon = step.icon;
-                    const isActive = idx === currentStep;
-                    const isCompleted = idx < currentStep;
-
-                    return (
-                        <div key={idx} className="relative z-10 flex flex-col items-center">
-                            <div className={cn(
-                                "h-12 w-12 rounded-[1.25rem] flex items-center justify-center border-4 transition-all duration-500",
-                                isActive ? "bg-sky-600 border-sky-100 dark:border-sky-900/50 text-white shadow-lg shadow-sky-600/20 scale-110" :
-                                    isCompleted ? "bg-emerald-500 border-emerald-50 dark:border-emerald-900/40 text-white" :
-                                        "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-300 shadow-sm"
-                            )}>
-                                <Icon className={cn("h-5 w-5", isActive && "animate-pulse")} />
-                            </div>
-                            <span className={cn(
-                                "absolute top-16 text-[10px] font-black whitespace-nowrap uppercase tracking-[0.2em]",
-                                isActive ? "text-sky-600" : isCompleted ? "text-emerald-500" : "text-slate-400"
-                            )}>
-                                {step.title}
-                            </span>
-                        </div>
-                    );
-                })}
+        <div className="max-w-5xl mx-auto py-8">
+            <div className="mb-10 text-center">
+                <h1 className="text-3xl font-black text-slate-800 dark:text-white mb-2">
+                    {isEditMode ? "Edit Student" : "Student Admission"}
+                </h1>
+                <p className="text-slate-500 dark:text-slate-400">
+                    {isEditMode ? "Update the student information below" : "Complete the form below to enroll a new student"}
+                </p>
             </div>
 
-            <form onSubmit={form.handleSubmit((data) => onSubmit(data))}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
                 <Card className="border-none shadow-[0_32px_64px_-16px_rgba(0,0,0,0.05)] bg-white/70 dark:bg-slate-900/70 backdrop-blur-3xl rounded-[2.5rem] overflow-hidden">
-                    <CardContent className="p-8 md:p-16">
-                        {currentStep === 0 && <PersonalDetailsStep form={form} />}
-                        {currentStep === 1 && <AcademicInfoStep form={form} />}
-                        {currentStep === 2 && <GuardianDetailsStep form={form} />}
-                        {currentStep === 3 && <ReviewStep form={form} />}
+                    <CardContent className="p-8 md:p-12 space-y-16">
+
+                        {/* Section 1: Student Details */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">Student Details</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Personal information and contact details</p>
+                                </div>
+                            </div>
+                            <PersonalDetailsStep form={form} />
+                        </div>
+
+                        {/* Section 2: Academic Info */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">Academic Information</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Class, section, and previous school history</p>
+                                </div>
+                            </div>
+                            <AcademicInfoStep form={form} />
+                        </div>
+
+                        {/* Section 3: Guardians */}
+                        <div className="space-y-8">
+                            <div className="flex items-center gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
+                                <div>
+                                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">Guardian Details</h2>
+                                    <p className="text-sm text-slate-500 font-medium">Parent or guardian contact information</p>
+                                </div>
+                            </div>
+                            <GuardianDetailsStep form={form} />
+                        </div>
+
                     </CardContent>
 
                     {/* Footer Controls */}
-                    <div className="px-8 md:px-16 py-10 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-between items-center">
+                    <div className="px-8 md:px-12 py-8 bg-slate-50/50 dark:bg-slate-800/30 border-t border-slate-100/50 dark:border-slate-800/50 flex justify-end">
                         <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={prevStep}
-                            disabled={currentStep === 0}
-                            className="rounded-2xl h-14 px-8 text-slate-500 font-bold hover:bg-white dark:hover:bg-slate-800 shadow-sm disabled:opacity-30 transition-all hover:translate-x-[-4px]"
-                        >
-                            <ArrowLeft className="h-5 w-5 mr-3" /> Previous
-                        </Button>
-
-                        <div className="flex items-center gap-4">
-                            <span className="text-xs font-bold text-slate-400 mr-4 uppercase tracking-widest hidden md:block">
-                                Step {currentStep + 1} of {STEPS.length}
-                            </span>
-
-                            {currentStep < STEPS.length - 1 ? (
-                                <Button
-                                    type="button"
-                                    onClick={nextStep}
-                                    size="xxl"
-                                >
-                                    Next Step <ArrowRight className="h-5 w-5 ml-3" />
-                                </Button>
-                            ) : (
-                                <Button
-                                    type="submit"
-                                    disabled={isPending}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl h-14 px-12 font-black shadow-2xl shadow-emerald-500/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                                >
-                                    {isPending ? (
-                                        <div className="flex items-center">
-                                            <Loader2 className="h-5 w-5 animate-spin mr-3" />
-                                            Processing...
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center">
-                                            <Check className="h-5 w-5 mr-3" />
-                                            Complete Admission
-                                        </div>
-                                    )}
-                                </Button>
+                            type="submit"
+                            disabled={isPending}
+                            className={cn(
+                                "text-white rounded-2xl h-14 px-12 font-black shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] w-full md:w-auto",
+                                isEditMode
+                                    ? "bg-sky-600 hover:bg-sky-700 shadow-sky-500/30"
+                                    : "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/30"
                             )}
-                        </div>
+                        >
+                            {isPending ? (
+                                <div className="flex items-center">
+                                    <Loader2 className="h-5 w-5 animate-spin mr-3" />
+                                    Processing...
+                                </div>
+                            ) : (
+                                <div className="flex items-center">
+                                    <Check className="h-5 w-5 mr-3" />
+                                    {isEditMode ? "Update Student" : "Complete Admission"}
+                                </div>
+                            )}
+                        </Button>
                     </div>
                 </Card>
             </form>

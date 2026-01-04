@@ -62,6 +62,12 @@ SYSTEM_PERMISSIONS = [
         "module": "Students",
         "description": "Remove student records from the system",
     },
+    {
+        "codename": "activate_student_portal",
+        "name": "Activate Student Portal",
+        "module": "Students",
+        "description": "Generate and manage student portal credentials",
+    },
     # Staff Management
     {
         "codename": "view_staff",

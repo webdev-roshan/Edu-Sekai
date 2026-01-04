@@ -158,3 +158,130 @@ class CredentialDistributionView(APIView):
                 continue
 
         return Response(data)
+
+
+class StudentDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.request.method in ["PUT", "PATCH"]:
+            return [IsAuthenticated(), HasPermission("change_student")]
+        elif self.request.method == "DELETE":
+            return [IsAuthenticated(), HasPermission("delete_student")]
+        return [IsAuthenticated(), HasPermission("view_student")]
+
+    def get(self, request, pk):
+        try:
+            student = Student.objects.select_related("profile").get(id=pk)
+        except Student.DoesNotExist:
+            return Response(
+                {"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        current = student.enrollments.filter(is_current=True).first()
+
+        # We need parents for the edit form
+        parents_data = []
+        relations = student.parent_links.select_related("parent__profile").all()
+        for rel in relations:
+            p_profile = rel.parent.profile
+            parents_data.append(
+                {
+                    "first_name": p_profile.first_name,
+                    "last_name": p_profile.last_name,
+                    "phone": p_profile.phone,
+                    "gender": p_profile.gender,
+                    "occupation": rel.parent.occupation,
+                    "relation": rel.relation_type,
+                    "is_primary": rel.is_primary_contact,
+                }
+            )
+
+        data = {
+            "id": student.id,
+            "first_name": student.profile.first_name,
+            "middle_name": student.profile.middle_name,
+            "last_name": student.profile.last_name,
+            "enrollment_id": student.enrollment_id,
+            "gender": student.profile.gender,
+            "date_of_birth": student.profile.date_of_birth,
+            "email": student.profile.user.email if student.profile.user_id else None,
+            "phone": student.profile.phone,
+            "address": student.profile.address,
+            # Academic
+            "level": current.level if current else "",
+            "section": current.section if current else "",
+            "academic_year": current.academic_year if current else "",
+            "admission_date": student.admission_date,
+            "parents": parents_data,  # Include parents for editing
+        }
+
+        # Add previous academic history if exists
+        history = student.academic_history.first()
+        if history:
+            data["previous_school"] = history.previous_school
+            data["last_grade_passed"] = history.last_grade_passed
+
+        return Response(data)
+
+    def put(self, request, pk):
+        try:
+            student = Student.objects.select_related("profile").get(id=pk)
+        except Student.DoesNotExist:
+            return Response(
+                {"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = StudentEnrollmentSerializer(
+            student, data=request.data, partial=True
+        )
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Student updated successfully"})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @transaction.atomic
+    def delete(self, request, pk):
+        try:
+            student = Student.objects.select_related("profile").get(id=pk)
+        except Student.DoesNotExist:
+            return Response(
+                {"error": "Student not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        user_id = student.profile.user_id
+
+        # Profile deletion handling
+        # Since 'profile' is OneToOne on Student model with CASCADE, deleting student *might* not delete profile
+        # if the FK is on Student. We must check Student model definition.
+        # Student model: profile = OneToOneField("profiles.Profile", ...)
+        # So Student -> Profile.
+        # Deleting Student does NOT cascade to Profile.
+        # We must delete Profile explicitly.
+        profile = student.profile
+
+        student.delete()
+        profile.delete()
+
+        if user_id:
+            from django.apps import apps
+            from django.db import connection
+
+            User = apps.get_model("accounts", "User")
+            UserRole = apps.get_model("roles", "UserRole")
+
+            # Remove specific role for this tenant
+            UserRole.objects.filter(
+                user__id=user_id,
+                role__slug="student",
+                organization=connection.tenant,
+            ).delete()
+
+            # Check for orphans - if user has NO other roles in ANY organization
+            if not UserRole.objects.filter(user__id=user_id).exists():
+                try:
+                    User.objects.get(id=user_id).delete()
+                except User.DoesNotExist:
+                    pass
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

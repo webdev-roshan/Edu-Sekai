@@ -112,6 +112,63 @@ class StudentEnrollmentSerializer(serializers.Serializer):
 
         return student
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        # instance is the Student object
+        profile = instance.profile
+
+        # 1. Update Profile (Identity)
+        profile.first_name = validated_data.get("first_name", profile.first_name)
+        profile.middle_name = validated_data.get("middle_name", profile.middle_name)
+        profile.last_name = validated_data.get("last_name", profile.last_name)
+        profile.gender = validated_data.get("gender", profile.gender)
+        profile.date_of_birth = validated_data.get(
+            "date_of_birth", profile.date_of_birth
+        )
+        profile.phone = validated_data.get("phone", profile.phone)
+        profile.address = validated_data.get("address", profile.address)
+        profile.save()
+
+        # 2. Update Student Record
+        if "admission_date" in validated_data:
+            instance.admission_date = validated_data["admission_date"]
+        instance.save()
+
+        # 3. Update or Create Level Info
+        # We try to update the CURRENT level
+        current_level = instance.enrollments.filter(is_current=True).first()
+        if (
+            "level" in validated_data
+            or "section" in validated_data
+            or "academic_year" in validated_data
+        ):
+            if current_level:
+                current_level.level = validated_data.get("level", current_level.level)
+                current_level.section = validated_data.get(
+                    "section", current_level.section
+                )
+                current_level.academic_year = validated_data.get(
+                    "academic_year", current_level.academic_year
+                )
+                current_level.save()
+            else:
+                # Fallback if no current level exists (shouldn't happen but safe)
+                StudentLevel.objects.create(
+                    student=instance,
+                    level=validated_data.get("level", "N/A"),
+                    section=validated_data.get("section", ""),
+                    academic_year=validated_data.get(
+                        "academic_year", ""
+                    ),  # You might want a default current year logic here
+                    is_current=True,
+                )
+
+        # 4. Handle Parents - TODO: Complex Nested Update
+        # For now, we skip updating parents via this endpoint to avoid complexity
+        # and recommend a dedicated Family Management API.
+
+        return instance
+
 
 class BulkAccountCreationSerializer(serializers.Serializer):
     student_id = serializers.UUIDField()

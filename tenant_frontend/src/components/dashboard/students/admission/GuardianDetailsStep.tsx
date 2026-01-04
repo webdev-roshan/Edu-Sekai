@@ -29,13 +29,7 @@ export default function GuardianDetailsStep({ form }: GuardianDetailsStepProps) 
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-sky-100 dark:bg-sky-900/30 rounded-lg">
-                        <Users className="h-5 w-5 text-sky-600" />
-                    </div>
-                    <h3 className="font-bold text-slate-800 dark:text-white">Guardian Information</h3>
-                </div>
+            <div className="flex justify-end">
                 <Button
                     type="button"
                     variant="outline"

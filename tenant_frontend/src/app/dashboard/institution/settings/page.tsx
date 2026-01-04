@@ -47,7 +47,7 @@ export default function InstitutionSettingsPage() {
     const router = useRouter();
 
     const canView = isOwner || can("view_institution_profile");
-    const canEdit = isOwner || can("edit_institution_profile");
+    const canEdit = isOwner || can("change_institution_profile");
 
     const form = useForm<InstitutionFormValues>({
         resolver: zodResolver(institutionSchema),
