@@ -5,8 +5,21 @@ from django.dispatch import receiver
 @receiver(post_migrate)
 def seed_roles(sender, **kwargs):
     if sender.name == "roles":
+        from django.db import connection
         from .models import Role, Permission
         from .constants import SYSTEM_PERMISSIONS
+
+        # IMPORTANT: Only seed roles in TENANT schemas, not in public schema
+        # This prevents errors when roles app is in TENANT_APPS
+        if connection.schema_name == "public":
+            print(
+                "[ROLES] Skipping role seeding in public schema (roles are tenant-specific)"
+            )
+            return
+
+        print(
+            f"[ROLES] Seeding roles and permissions for schema: {connection.schema_name}"
+        )
 
         # 1. Seed Permissions
         created_permissions = []

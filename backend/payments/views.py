@@ -16,7 +16,7 @@ class InitPaymentView(APIView):
         amount = "500"  # Fixed amount for now
 
         # Create pending payment record
-        transaction_uuid = str(uuid.uuid4())
+        transaction_uuid = uuid.uuid4().hex
 
         Payment.objects.create(
             transaction_uuid=transaction_uuid,
@@ -40,7 +40,10 @@ class InitPaymentView(APIView):
 
         # Print for debugging (will show in docker logs)
         print(f"Signing Message: {message}")
-        print(f"Using Secret: {settings.ESEWA_CLIENT_SECRET[:4]}***")
+        print(f"Product Code (repr): {repr(product_code)}")
+        print(f"Secret Key (repr): {repr(settings.ESEWA_CLIENT_SECRET)}")
+        print(f"Secret Key Length: {len(settings.ESEWA_CLIENT_SECRET)}")
+        print(f"Transaction UUID: {transaction_uuid}")
 
         return Response(
             {

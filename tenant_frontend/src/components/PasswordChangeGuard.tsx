@@ -59,9 +59,6 @@ export default function PasswordChangeGuard({ children }: { children: React.Reac
 
                     {/* Header Branding */}
                     <div className="text-center space-y-2">
-                        <div className="mx-auto w-16 h-16 bg-linear-gradient-to-tr from-amber-500 to-orange-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-orange-500/30 mb-6">
-                            <ShieldAlert className="h-8 w-8 text-white" />
-                        </div>
                         <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                             Security Check
                         </h1>
@@ -74,25 +71,14 @@ export default function PasswordChangeGuard({ children }: { children: React.Reac
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl">
                         <form onSubmit={handlePasswordChange} className="space-y-6">
                             <div className="space-y-4">
-                                <div className="relative">
-                                    <FloatingLabelInput
-                                        id="new-password"
-                                        type={showPassword ? "text" : "password"}
-                                        label="New Secure Password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        required
-                                        className="h-14 pr-10 text-lg bg-slate-50 dark:bg-slate-950/50"
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2"
-                                    >
-                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                                    </button>
-                                </div>
-
+                                <FloatingLabelInput
+                                    id="new-password"
+                                    type={showPassword ? "text" : "password"}
+                                    label="New Secure Password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                />
                                 <FloatingLabelInput
                                     id="confirm-password"
                                     type={showPassword ? "text" : "password"}
@@ -100,8 +86,16 @@ export default function PasswordChangeGuard({ children }: { children: React.Reac
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
-                                    className="h-14 text-lg bg-slate-50 dark:bg-slate-950/50"
                                 />
+                                <div className="w-full">
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="flex items-center justify-end cursor-pointer"
+                                    >
+                                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                                    </button>
+                                </div>
                             </div>
 
                             {/* Requirements */}
@@ -126,7 +120,8 @@ export default function PasswordChangeGuard({ children }: { children: React.Reac
 
                             <Button
                                 type="submit"
-                                className="w-full h-14 text-base font-bold rounded-2xl bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all hover:scale-[1.02]"
+                                size="xl"
+                                className="w-full"
                                 disabled={isPending}
                             >
                                 {isPending ? (

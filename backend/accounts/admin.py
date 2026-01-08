@@ -18,10 +18,10 @@ class GlobalOnlyAdminMixin:
         return connection.schema_name == "public"
 
 
-class UserRoleInline(admin.TabularInline):
-    model = UserRole
-    extra = 0
-    can_delete = True
+# class UserRoleInline(admin.TabularInline):
+#     model = UserRole
+#     extra = 0
+#     can_delete = True
 
 
 @admin.register(User)
@@ -32,7 +32,7 @@ class UserAdmin(GlobalOnlyAdminMixin, BaseUserAdmin):
     ordering = ("email",)
     readonly_fields = ("created_at", "updated_at")
 
-    inlines = [UserRoleInline]
+    # inlines = [UserRoleInline]  # UserRole is tenant-specific, cannot show in public admin
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),

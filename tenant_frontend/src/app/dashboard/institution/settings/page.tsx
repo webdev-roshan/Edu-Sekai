@@ -181,7 +181,6 @@ export default function InstitutionSettingsPage() {
                                     {...form.register("name")}
                                     id="name"
                                     label="Institutional Name"
-                                    placeholder="e.g. Edu Sekai Academy"
                                     error={form.formState.errors.name?.message}
                                     disabled={!canEdit}
                                 />

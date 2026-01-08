@@ -21,7 +21,7 @@ class RoleAdmin(GlobalOnlyAdmin):
 
 @admin.register(UserRole)
 class UserRoleAdmin(GlobalOnlyAdmin):
-    list_display = ("user", "role", "organization", "is_active", "created_at")
-    search_fields = ("user__email", "role__name", "organization__name")
-    list_filter = ("role", "organization", "is_active")
+    list_display = ("user", "role", "is_active", "created_at")
+    search_fields = ("user__email", "role__name")
+    list_filter = ("role", "is_active")
     readonly_fields = ("created_at",)

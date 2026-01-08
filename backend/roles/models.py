@@ -47,17 +47,18 @@ class UserRole(models.Model):
         on_delete=models.PROTECT,
         related_name="user_roles",
     )
-    organization = models.ForeignKey(
-        "organizations.Organization",
-        on_delete=models.CASCADE,
-        related_name="user_roles",
-    )
 
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("user", "role", "organization")
+        unique_together = ("user", "role")
+        indexes = [
+            models.Index(
+                fields=["user", "role", "is_active"],
+                name="userrole_user_role_active_idx",
+            ),
+        ]
 
     def __str__(self):
-        return f"{self.user.email} → {self.role.slug} @ {self.organization.name}"
+        return f"{self.user.email} → {self.role.slug}"

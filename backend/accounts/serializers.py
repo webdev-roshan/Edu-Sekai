@@ -122,20 +122,20 @@ class OrganizationRegisterSerializer(serializers.Serializer):
                 username=username, email=email, password=password
             )
 
-        # 4. Create "Owner" Role if not exists (Public Schema)
-        owner_role, _ = Role.objects.get_or_create(
-            slug="owner", defaults={"name": "Owner", "is_system_role": True}
-        )
-
-        # 5. Link User to Org with Role (Public Schema)
-        # This triggers profiles/signals.py to auto-create Identity Profile, StaffProfile and InstitutionProfile
-        UserRole.objects.create(user=user, organization=organization, role=owner_role)
-
-        # 6. Update the auto-created personal profile with the user's phone and local_username
+        # 4. Create "Owner" Role and Link User within Tenant Context
         from profiles.models import Profile
         from django_tenants.utils import tenant_context
 
         with tenant_context(organization):
+            # Create "Owner" Role in tenant schema
+            owner_role, _ = Role.objects.get_or_create(
+                slug="owner", defaults={"name": "Owner", "is_system_role": True}
+            )
+
+            # Link User to Role in tenant schema
+            # This triggers profiles/signals.py to auto-create Identity Profile, StaffProfile and InstitutionProfile
+            UserRole.objects.create(user=user, role=owner_role)
+
             # We set the local_username for the owner in their isolated schema
             Profile.objects.filter(user_id=user.id).update(
                 phone=phone, local_username=username

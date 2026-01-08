@@ -99,9 +99,7 @@ class MeView(APIView):
         if tenant and tenant.schema_name != "public":
             from roles.models import UserRole
 
-            role_objects = UserRole.objects.filter(
-                user=user, organization=tenant
-            ).select_related("role")
+            role_objects = UserRole.objects.filter(user=user).select_related("role")
 
             role_slugs = [ur.role.slug for ur in role_objects]
             data["roles"] = role_slugs

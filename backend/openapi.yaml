@@ -1,0 +1,1574 @@
+openapi: 3.0.3
+info:
+  title: EduSekai API
+  version: 1.0.0
+  description: EduSekai backend REST API
+paths:
+  /api/auth/change-password/:
+    post:
+      operationId: auth_change_password_create
+      description: |-
+        Enables users to update their password.
+        Specifically clears the 'needs_password_change' flag and temporary credentials.
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/login/:
+    post:
+      operationId: auth_login_create
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/auth/logout/:
+    post:
+      operationId: auth_logout_create
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/me/:
+    get:
+      operationId: auth_me_retrieve
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/auth/refresh/:
+    post:
+      operationId: auth_refresh_create
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/auth/register-organization/:
+    post:
+      operationId: auth_register_organization_create
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/auth/verify-account/:
+    post:
+      operationId: auth_verify_account_create
+      description: |-
+        Checks if a username or email already exists in the global identity pool.
+        Used during 'Get Started' to guide the user to login or choose new names.
+      tags:
+      - auth
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/families/parents/:
+    get:
+      operationId: families_parents_list
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Parent'
+          description: ''
+    post:
+      operationId: families_parents_create
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parent'
+          description: ''
+  /api/families/parents/{id}/:
+    get:
+      operationId: families_parents_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this parent.
+        required: true
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parent'
+          description: ''
+    put:
+      operationId: families_parents_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this parent.
+        required: true
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ParentRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parent'
+          description: ''
+    patch:
+      operationId: families_parents_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this parent.
+        required: true
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedParentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedParentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedParentRequest'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Parent'
+          description: ''
+    delete:
+      operationId: families_parents_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this parent.
+        required: true
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/families/relations/:
+    get:
+      operationId: families_relations_list
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentParentRelation'
+          description: ''
+    post:
+      operationId: families_relations_create
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentRelation'
+          description: ''
+  /api/families/relations/{id}/:
+    get:
+      operationId: families_relations_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this student parent relation.
+        required: true
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentRelation'
+          description: ''
+    put:
+      operationId: families_relations_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this student parent relation.
+        required: true
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentParentRelationRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentRelation'
+          description: ''
+    patch:
+      operationId: families_relations_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this student parent relation.
+        required: true
+      tags:
+      - families
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentParentRelationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentParentRelationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentParentRelationRequest'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentParentRelation'
+          description: ''
+    delete:
+      operationId: families_relations_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this student parent relation.
+        required: true
+      tags:
+      - families
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/organizations/check-domain/:
+    get:
+      operationId: organizations_check_domain_retrieve
+      tags:
+      - organizations
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/payments/init/:
+    post:
+      operationId: payments_init_create
+      tags:
+      - payments
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/payments/verify/:
+    get:
+      operationId: payments_verify_retrieve
+      tags:
+      - payments
+      security:
+      - bearerAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/profiles/institution/:
+    get:
+      operationId: profiles_institution_retrieve
+      tags:
+      - profiles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: profiles_institution_partial_update
+      tags:
+      - profiles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/profiles/me/:
+    get:
+      operationId: profiles_me_retrieve
+      tags:
+      - profiles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: profiles_me_partial_update
+      tags:
+      - profiles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/roles/:
+    get:
+      operationId: roles_list
+      tags:
+      - roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+          description: ''
+    post:
+      operationId: roles_create
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/roles/{id}/:
+    get:
+      operationId: roles_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this role.
+        required: true
+      tags:
+      - roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    put:
+      operationId: roles_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this role.
+        required: true
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RoleRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    patch:
+      operationId: roles_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this role.
+        required: true
+      tags:
+      - roles
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedRoleRequest'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+    delete:
+      operationId: roles_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this role.
+        required: true
+      tags:
+      - roles
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/roles/permissions/:
+    get:
+      operationId: roles_permissions_list
+      tags:
+      - roles
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Permission'
+          description: ''
+  /api/staff/activate-instructor/:
+    post:
+      operationId: staff_activate_instructor_create
+      description: |-
+        Phase 2: 'IT Access'.
+        Creates a User account for an existing Instructor/Staff member.
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/staff/credential-distribution/:
+    get:
+      operationId: staff_credential_distribution_retrieve
+      description: |-
+        Phase 3: 'Distribution'.
+        Lists staff/instructors who have been activated but haven't changed their password.
+        Includes their initial temporary password.
+        Optimized to prevent N+1 queries.
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/staff/instructors/:
+    get:
+      operationId: staff_instructors_list
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Instructor'
+          description: ''
+    post:
+      operationId: staff_instructors_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+          description: ''
+  /api/staff/instructors/{id}/:
+    get:
+      operationId: staff_instructors_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this instructor.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+          description: ''
+    put:
+      operationId: staff_instructors_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this instructor.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InstructorRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+          description: ''
+    patch:
+      operationId: staff_instructors_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this instructor.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInstructorRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInstructorRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInstructorRequest'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Instructor'
+          description: ''
+    delete:
+      operationId: staff_instructors_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this instructor.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/staff/members/:
+    get:
+      operationId: staff_members_list
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StaffMember'
+          description: ''
+    post:
+      operationId: staff_members_create
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMember'
+          description: ''
+  /api/staff/members/{id}/:
+    get:
+      operationId: staff_members_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff member.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMember'
+          description: ''
+    put:
+      operationId: staff_members_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff member.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffMemberRequest'
+        required: true
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMember'
+          description: ''
+    patch:
+      operationId: staff_members_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff member.
+        required: true
+      tags:
+      - staff
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffMemberRequest'
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StaffMember'
+          description: ''
+    delete:
+      operationId: staff_members_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: A UUID string identifying this staff member.
+        required: true
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/staff/onboard-instructor/:
+    post:
+      operationId: staff_onboard_instructor_create
+      description: |-
+        Phase 1: 'Hiring' an Instructor.
+        Creates a Profile and Staff/Instructor record without a User login.
+      tags:
+      - staff
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/students/credentials/:
+    get:
+      operationId: students_credentials_retrieve
+      description: |-
+        Lists students who have been activated but haven't changed their password.
+        Includes their initial temporary password.
+        Optimized to prevent N+1 queries.
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/students/detail/{id}/:
+    get:
+      operationId: students_detail_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: students_detail_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: students_detail_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/students/enroll/:
+    post:
+      operationId: students_enroll_create
+      description: |-
+        Unified endpoint for enrolling a new student.
+        Handles profile creation, student record, and academic placement.
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/students/list/:
+    get:
+      operationId: students_list_retrieve
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/students/portal-activation/:
+    post:
+      operationId: students_portal_activation_create
+      description: |-
+        Creates user accounts for existing student profiles.
+        Expects a list of enrollment objects.
+      tags:
+      - students
+      security:
+      - bearerAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    BlankEnum:
+      enum:
+      - ''
+    GenderEnum:
+      enum:
+      - male
+      - female
+      - other
+      type: string
+      description: |-
+        * `male` - Male
+        * `female` - Female
+        * `other` - Other
+    Instructor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        specialization:
+          type: string
+          maxLength: 100
+        license_number:
+          type: string
+          maxLength: 100
+        bio:
+          type: string
+        staff_member:
+          type: string
+          format: uuid
+      required:
+      - id
+      - specialization
+      - staff_member
+    InstructorRequest:
+      type: object
+      properties:
+        specialization:
+          type: string
+          minLength: 1
+          maxLength: 100
+        license_number:
+          type: string
+          maxLength: 100
+        bio:
+          type: string
+        staff_member:
+          type: string
+          format: uuid
+      required:
+      - specialization
+      - staff_member
+    Parent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        profile:
+          type: string
+          format: uuid
+        profile_details:
+          allOf:
+          - $ref: '#/components/schemas/Profile'
+          readOnly: true
+        occupation:
+          type: string
+          maxLength: 100
+        office_address:
+          type: string
+        income_level:
+          type: string
+          maxLength: 50
+        children:
+          type: string
+          readOnly: true
+      required:
+      - children
+      - id
+      - profile
+      - profile_details
+    ParentRequest:
+      type: object
+      properties:
+        profile:
+          type: string
+          format: uuid
+        occupation:
+          type: string
+          maxLength: 100
+        office_address:
+          type: string
+        income_level:
+          type: string
+          maxLength: 50
+      required:
+      - profile
+    PatchedInstructorRequest:
+      type: object
+      properties:
+        specialization:
+          type: string
+          minLength: 1
+          maxLength: 100
+        license_number:
+          type: string
+          maxLength: 100
+        bio:
+          type: string
+        staff_member:
+          type: string
+          format: uuid
+    PatchedParentRequest:
+      type: object
+      properties:
+        profile:
+          type: string
+          format: uuid
+        occupation:
+          type: string
+          maxLength: 100
+        office_address:
+          type: string
+        income_level:
+          type: string
+          maxLength: 50
+    PatchedRoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+        permission_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+            writeOnly: true
+          writeOnly: true
+    PatchedStaffMemberRequest:
+      type: object
+      properties:
+        profile:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          minLength: 1
+          maxLength: 50
+        designation:
+          type: string
+          minLength: 1
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+        qualification:
+          type: string
+        experience_years:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+    PatchedStudentParentRelationRequest:
+      type: object
+      properties:
+        relation_type:
+          $ref: '#/components/schemas/RelationTypeEnum'
+        is_primary_contact:
+          type: boolean
+        can_pickup:
+          type: boolean
+        student:
+          type: string
+          format: uuid
+        parent:
+          type: string
+          format: uuid
+    Permission:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        codename:
+          type: string
+          maxLength: 100
+        module:
+          type: string
+          maxLength: 50
+        description:
+          type: string
+      required:
+      - codename
+      - id
+      - module
+      - name
+    PermissionRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        codename:
+          type: string
+          minLength: 1
+          maxLength: 100
+        module:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+      required:
+      - codename
+      - module
+      - name
+    Profile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        user_id:
+          type: string
+          format: uuid
+          readOnly: true
+          nullable: true
+        username:
+          type: string
+          readOnly: true
+        local_username:
+          type: string
+          nullable: true
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 50
+        middle_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          maxLength: 50
+        gender:
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        blood_group:
+          type: string
+          maxLength: 5
+        phone:
+          type: string
+          maxLength: 20
+        alt_phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+        profile_image:
+          type: string
+          format: uri
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - email
+      - first_name
+      - id
+      - last_name
+      - updated_at
+      - user_id
+      - username
+    ProfileRequest:
+      type: object
+      properties:
+        local_username:
+          type: string
+          nullable: true
+          maxLength: 150
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        middle_name:
+          type: string
+          maxLength: 50
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        gender:
+          oneOf:
+          - $ref: '#/components/schemas/GenderEnum'
+          - $ref: '#/components/schemas/BlankEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        blood_group:
+          type: string
+          maxLength: 5
+        phone:
+          type: string
+          maxLength: 20
+        alt_phone:
+          type: string
+          maxLength: 20
+        address:
+          type: string
+        profile_image:
+          type: string
+          format: binary
+          nullable: true
+      required:
+      - first_name
+      - last_name
+    RelationTypeEnum:
+      enum:
+      - father
+      - mother
+      - guardian
+      - brother
+      - sister
+      - other
+      type: string
+      description: |-
+        * `father` - Father
+        * `mother` - Mother
+        * `guardian` - Guardian
+        * `brother` - Brother
+        * `sister` - Sister
+        * `other` - Other
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          readOnly: true
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        is_system_role:
+          type: boolean
+          readOnly: true
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Permission'
+          readOnly: true
+        user_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_system_role
+      - name
+      - permissions
+      - slug
+      - user_count
+    RoleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+        description:
+          type: string
+        permission_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+            writeOnly: true
+          writeOnly: true
+      required:
+      - name
+      - permission_ids
+    StaffMember:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        profile:
+          type: string
+          format: uuid
+        profile_details:
+          allOf:
+          - $ref: '#/components/schemas/Profile'
+          readOnly: true
+        employee_id:
+          type: string
+          maxLength: 50
+        designation:
+          type: string
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+        qualification:
+          type: string
+        experience_years:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        instructor_data:
+          allOf:
+          - $ref: '#/components/schemas/Instructor'
+          readOnly: true
+      required:
+      - designation
+      - employee_id
+      - id
+      - instructor_data
+      - profile
+      - profile_details
+    StaffMemberRequest:
+      type: object
+      properties:
+        profile:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          minLength: 1
+          maxLength: 50
+        designation:
+          type: string
+          minLength: 1
+          maxLength: 100
+        department:
+          type: string
+          maxLength: 100
+        joining_date:
+          type: string
+          format: date
+          nullable: true
+        is_active:
+          type: boolean
+        qualification:
+          type: string
+        experience_years:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+      required:
+      - designation
+      - employee_id
+      - profile
+    StudentParentRelation:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        relation_type:
+          $ref: '#/components/schemas/RelationTypeEnum'
+        is_primary_contact:
+          type: boolean
+        can_pickup:
+          type: boolean
+        student:
+          type: string
+          format: uuid
+        parent:
+          type: string
+          format: uuid
+      required:
+      - id
+      - parent
+      - relation_type
+      - student
+    StudentParentRelationRequest:
+      type: object
+      properties:
+        relation_type:
+          $ref: '#/components/schemas/RelationTypeEnum'
+        is_primary_contact:
+          type: boolean
+        can_pickup:
+          type: boolean
+        student:
+          type: string
+          format: uuid
+        parent:
+          type: string
+          format: uuid
+      required:
+      - parent
+      - relation_type
+      - student

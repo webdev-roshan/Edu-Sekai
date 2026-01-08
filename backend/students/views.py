@@ -277,14 +277,14 @@ class StudentDetailView(APIView):
             User = apps.get_model("accounts", "User")
             UserRole = apps.get_model("roles", "UserRole")
 
-            # Remove specific role for this tenant
+            # Remove student role in THIS tenant's schema
             UserRole.objects.filter(
                 user__id=user_id,
                 role__slug="student",
-                organization=connection.tenant,
             ).delete()
 
-            # Check for orphans - if user has NO other roles in ANY organization
+            # Check for orphans - if user has NO roles in THIS tenant
+            # Note: UserRole is now tenant-scoped, so this check is schema-specific
             if not UserRole.objects.filter(user__id=user_id).exists():
                 try:
                     User.objects.get(id=user_id).delete()

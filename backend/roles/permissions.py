@@ -42,9 +42,9 @@ class HasPermission(permissions.BasePermission):
         from roles.models import UserRole
 
         # Get all roles for this user in this tenant
-        user_roles = UserRole.objects.filter(
-            user=user, organization=tenant
-        ).select_related("role")
+        # UserRole is now in the tenant schema, so we don't need to filter by organization
+        # The connection.tenant is already active
+        user_roles = UserRole.objects.filter(user=user).select_related("role")
 
         if not user_roles.exists():
             return False

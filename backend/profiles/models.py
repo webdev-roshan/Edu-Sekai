@@ -49,6 +49,11 @@ class Profile(models.Model):
     class Meta:
         verbose_name = "Profile"
         verbose_name_plural = "Profiles"
+        indexes = [
+            models.Index(
+                fields=["user_id", "local_username"], name="profile_user_username_idx"
+            ),
+        ]
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

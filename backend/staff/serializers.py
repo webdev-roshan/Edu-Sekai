@@ -170,7 +170,6 @@ class InstructorActivationSerializer(serializers.Serializer):
             UserRole.objects.create(
                 user=user,
                 role=role,
-                organization=connection.tenant,
                 is_active=True,
             )
         except Role.DoesNotExist:

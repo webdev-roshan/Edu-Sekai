@@ -25,13 +25,14 @@ SHARED_APPS = (
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "drf_spectacular",
     "accounts",
-    "roles",
     "organizations",
     "payments",
 )
 
 TENANT_APPS = (
+    "roles",
     "profiles",
     "students",
     "staff",
@@ -133,7 +134,18 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "accounts.authentication.JWTCookieAuthentication",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "EduSekai API",
+    "DESCRIPTION": "EduSekai backend REST API",
+    "VERSION": "1.0.0",
+    "SECURITY": [{"bearerAuth": []}],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api",
+}
+
 
 # JWT
 SIMPLE_JWT = {

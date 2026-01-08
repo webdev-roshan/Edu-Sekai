@@ -256,7 +256,6 @@ class BulkAccountCreationSerializer(serializers.Serializer):
             UserRole.objects.get_or_create(
                 user=user,
                 role=student_role,
-                organization=connection.tenant,
                 defaults={"is_active": True},
             )
         except Role.DoesNotExist:
