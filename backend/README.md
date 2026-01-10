@@ -254,6 +254,20 @@ Lists profiles that don't have associated User accounts (students/staff who have
 
 These tools maintain the application-level referential integrity that the soft-link pattern requires.
 
+### Test Data Generation
+
+**Populate Mock Data:**
+```bash
+python manage.py populate_test_data --schema=<schema_name>
+```
+Uses the `Faker` library to generate realistic test data for a specific tenant.
+- Populates PROGRAMS, SECTIONS, SUBJECTS, STAFF, STUDENTS, and FAMILIES.
+- Generating COURSE CONTENT (assignments, submissions) with varied statuses.
+- Ensures referential integrity and avoids duplicates.
+- **Example:** `python manage.py populate_test_data --schema=school_oxford`
+
+> **Note:** User passwords are set to `password123` by default for generated accounts.
+
 ### Testing Infrastructure
 
 **Test Coverage:**
@@ -339,6 +353,18 @@ All multi-step operations (enrollment, activation, role assignment) are wrapped 
 - `POST /api/roles/` - Create custom role
 - `PUT /api/roles/{id}/` - Update role permissions
 - `GET /api/roles/permissions/` - List all available permissions
+
+**Academics (Tenant):**
+- `GET/POST /api/academics/programs/` - Manage academic programs
+- `GET/POST /api/academics/academic-levels/` - Manage grade levels
+- `GET/POST /api/academics/sections/` - Manage class sections
+- `GET/POST /api/academics/subjects/` - Manage subjects
+
+**Course Content (Tenant):**
+- `GET/POST /api/course-content/contents/` - Manage assignments, notes, etc.
+- `POST /api/course-content/submissions/` - Submit assignments
+- `POST /api/course-content/submissions/{id}/grade/` - Grade submissions
+- `GET /api/course-content/submissions/` - List submissions for grading
 
 ---
 

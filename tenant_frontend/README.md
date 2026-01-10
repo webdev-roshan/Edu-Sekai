@@ -78,6 +78,19 @@ Schools can:
 
 This provides controlled onboarding for new students and staff members.
 
+### Learning Management System (LMS)
+
+A built-in classroom environment where:
+- **Teachers** can create assignments, upload materials, and grade submissions.
+- **Students** can view course content, submit homework, and check grades.
+- **Features:** File uploads, due dates, rich text descriptions, and grading workflows.
+
+### Customization & Branding
+
+- **School Identity:** Upload custom institution logos and banners that replace default branding throughout the dashboard.
+- **User Profiles:** Staff and students can upload personal profile pictures.
+- **Dynamic Themes:** The interface adapts to display the school's identity via the sidebar and header.
+
 ---
 
 ## Technical Architecture
@@ -179,10 +192,22 @@ Landing page showing:
 - **List View:** All staff members and instructors
 - **Onboarding Form:** Hire new staff/instructors
 - **Activation:** Create portal accounts for staff
+- **Activation:** Create portal accounts for staff
 - **Credential Distribution:** Share login credentials with staff
 
+### Academics (`/academics`)
+- **Program Structure:** Define programs (e.g., High School, Diploma) and academic levels.
+- **Class Sections:** Manage sections and assign capacities.
+- **Subjects:** Create subject catalog and assign to levels.
+
+### Course Content (`/course-content`)
+- **Assignments:** Create and manage course work.
+- **Grading Board:** Review and grade student submissions.
+- **Materials:** specialized resource distribution.
+
 ### Settings (`/settings`)
-- **Organization Profile:** Logo, colors, contact information
+- **Institution Profile:** Custom Logo, Banner, Bio, and social links.
+- **Organization Profile:** Contact information.
 - **User Management:** View and manage user accounts
 - **Role Configuration:** Create custom roles, assign permissions
 - **Academic Calendar:** Set terms, holidays, important dates

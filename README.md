@@ -25,7 +25,7 @@ Handles school onboarding, eSewa payment integration, and subdomain provisioning
 ### 3. Tenant Dashboard (Next.js)
 **Location:** `./tenant_frontend`  
 **Port:** `http://[school].localhost:3555`  
-**Purpose:** School-specific management interface for daily operations.
+**Purpose:** School-specific management interface for daily operations. Includes full **Learning Management System (LMS)** capabilities (assignments, grading, materials).
 
 Each school accesses their own isolated environment through a unique subdomain (e.g., `oxford.localhost:3555`).
 
@@ -232,6 +232,16 @@ Shows all profiles that don't have an associated User account (students/staff wi
 
 **Purpose:**
 These tools ensure referential integrity across schemas since we use soft links instead of database Foreign Keys.
+
+### Test Data Generation
+
+**Populate Mock Data:**
+```bash
+docker compose exec backend python manage.py populate_test_data --schema=<schema_name>
+```
+Uses `Faker` to generate comprehensive test datasets (students, staff, academics, course content) for a specific tenant.
+- **Example:** `docker compose exec backend python manage.py populate_test_data --schema=school_oxford`
+- **Defaults:** Creates users with password `password123`.
 
 ### Testing
 
