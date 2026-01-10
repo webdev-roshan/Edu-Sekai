@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSections, useAcademicLevels, useCreateSection, useUpdateSection, useDeleteSection } from "@/hooks/useAcademics";
+import { usePermissions } from "@/providers/PermissionProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,11 +48,16 @@ import {
 import { Section } from "@/types/Academics";
 
 export default function SectionsTab() {
+    const { can, isOwner } = usePermissions();
     const { data: sections, isLoading: isLoadingSections } = useSections();
     const { data: levels, isLoading: isLoadingLevels } = useAcademicLevels();
     const { mutate: createSection, isPending: isCreating } = useCreateSection();
     const { mutate: updateSection, isPending: isUpdating } = useUpdateSection();
     const { mutate: deleteSection } = useDeleteSection();
+
+    const canCreate = isOwner || can("add_section");
+    const canEdit = isOwner || can("change_section");
+    const canDelete = isOwner || can("delete_section");
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingSection, setEditingSection] = useState<Section | null>(null);

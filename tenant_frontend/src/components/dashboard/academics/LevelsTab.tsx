@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAcademicLevels, usePrograms, useCreateLevel, useUpdateLevel, useDeleteLevel } from "@/hooks/useAcademics";
+import { usePermissions } from "@/providers/PermissionProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -47,11 +48,16 @@ import {
 import { AcademicLevel } from "@/types/Academics";
 
 export default function LevelsTab() {
+    const { can, isOwner } = usePermissions();
     const { data: levels, isLoading: isLoadingLevels } = useAcademicLevels();
     const { data: programs, isLoading: isLoadingPrograms } = usePrograms();
     const { mutate: createLevel, isPending: isCreating } = useCreateLevel();
     const { mutate: updateLevel, isPending: isUpdating } = useUpdateLevel();
     const { mutate: deleteLevel } = useDeleteLevel();
+
+    const canCreate = isOwner || can("add_academic_level");
+    const canEdit = isOwner || can("change_academic_level");
+    const canDelete = isOwner || can("delete_academic_level");
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingLevel, setEditingLevel] = useState<AcademicLevel | null>(null);
@@ -114,10 +120,12 @@ export default function LevelsTab() {
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Academic Levels</h3>
                     <p className="text-sm text-slate-500 dark:text-slate-400">Manage grades, years, or semesters within programs</p>
                 </div>
-                <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    New Level
-                </Button>
+                {canCreate && (
+                    <Button onClick={() => setIsDialogOpen(true)} className="gap-2">
+                        <Plus className="h-4 w-4" />
+                        New Level
+                    </Button>
+                )}
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
@@ -206,26 +214,32 @@ export default function LevelsTab() {
                                         </span>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => handleEdit(level)}>
-                                                    <Pencil className="h-4 w-4 mr-2" />
-                                                    Edit
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem
-                                                    onClick={() => setLevelToDelete(level.id)}
-                                                    className="text-red-600"
-                                                >
-                                                    <Trash2 className="h-4 w-4 mr-2" />
-                                                    Delete
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        {(canEdit || canDelete) && (
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    {canEdit && (
+                                                        <DropdownMenuItem onClick={() => handleEdit(level)}>
+                                                            <Pencil className="h-4 w-4 mr-2" />
+                                                            Edit
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                    {canDelete && (
+                                                        <DropdownMenuItem
+                                                            onClick={() => setLevelToDelete(level.id)}
+                                                            className="text-red-600"
+                                                        >
+                                                            <Trash2 className="h-4 w-4 mr-2" />
+                                                            Delete
+                                                        </DropdownMenuItem>
+                                                    )}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        )}
                                     </TableCell>
                                 </TableRow>
                             ))

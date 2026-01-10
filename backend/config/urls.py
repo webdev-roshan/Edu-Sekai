@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -12,4 +14,9 @@ urlpatterns = [
     path("api/staff/", include("staff.urls")),
     path("api/families/", include("families.urls")),
     path("api/academics/", include("academics.urls")),
+    path("api/course-content/", include("course_content.urls")),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

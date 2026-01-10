@@ -32,12 +32,14 @@ SHARED_APPS = (
 )
 
 TENANT_APPS = (
+    "core",  # Core utilities and management commands
     "roles",
     "profiles",
     "students",
     "staff",
     "families",
     "academics",
+    "course_content",
 )
 
 INSTALLED_APPS = list(SHARED_APPS) + [
@@ -223,3 +225,7 @@ JAZZMIN_UI_TWEAKS = {
     "navbar_fixed": True,
     "layout_fixed": True,
 }
+
+# Media Files (User Uploads)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

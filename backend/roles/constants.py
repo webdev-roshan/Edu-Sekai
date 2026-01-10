@@ -249,4 +249,41 @@ SYSTEM_PERMISSIONS = [
         "module": "Academics",
         "description": "Remove teacher subject allocations",
     },
+    # Course Content Management
+    {
+        "codename": "view_course_content",
+        "name": "View Course Content",
+        "module": "Course Content",
+        "description": "Access study materials, notes, and assignments",
+    },
+    {
+        "codename": "manage_course_content",
+        "name": "Manage Course Content",
+        "module": "Course Content",
+        "description": "Upload and manage study materials and notes",
+    },
+    {
+        "codename": "create_assignment",
+        "name": "Create Assignments",
+        "module": "Course Content",
+        "description": "Create and distribute assignments to students",
+    },
+    {
+        "codename": "grade_assignment",
+        "name": "Grade Assignments",
+        "module": "Course Content",
+        "description": "Review and grade student assignment submissions",
+    },
+    {
+        "codename": "submit_assignment",
+        "name": "Submit Assignments",
+        "module": "Course Content",
+        "description": "Submit assignment solutions (student permission)",
+    },
+    {
+        "codename": "manage_subject_enrollment",
+        "name": "Manage Subject Enrollment",
+        "module": "Course Content",
+        "description": "Enroll students in subjects",
+    },
 ]

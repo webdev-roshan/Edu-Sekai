@@ -9,6 +9,7 @@ import {
     ShieldCheck
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { getMediaUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -42,7 +43,15 @@ export const ProfileMenu = () => {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="p-0 hover:bg-transparent">
                     <div className="h-10 w-10 rounded-xl bg-linear-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-700 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 shadow-sm relative overflow-hidden group">
-                        {initials}
+                        {user.profile?.profile_image ? (
+                            <img
+                                src={getMediaUrl(user.profile.profile_image) || ''}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            initials
+                        )}
                         <div className="absolute inset-0 bg-sky-600 opacity-0 group-hover:opacity-10 transition-opacity" />
                     </div>
                 </Button>

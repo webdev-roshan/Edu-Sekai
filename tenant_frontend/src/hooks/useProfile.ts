@@ -8,7 +8,7 @@ async function getMyProfile(): Promise<AnyProfile> {
     return data;
 }
 
-async function updateMyProfile(payload: Partial<AnyProfile>): Promise<AnyProfile> {
+async function updateMyProfile(payload: Partial<AnyProfile> | FormData): Promise<AnyProfile> {
     const { data } = await axiosInstance.patch<AnyProfile>("/profiles/me/", payload);
     return data;
 }
@@ -51,7 +51,7 @@ async function getInstitutionProfile(): Promise<InstitutionProfile> {
     return data;
 }
 
-async function updateInstitutionProfile(payload: Partial<InstitutionProfile>): Promise<InstitutionProfile> {
+async function updateInstitutionProfile(payload: Partial<InstitutionProfile> | FormData): Promise<InstitutionProfile> {
     const { data } = await axiosInstance.patch<InstitutionProfile>("/profiles/institution/", payload);
     return data;
 }

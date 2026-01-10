@@ -13,9 +13,9 @@ fi
 
 # Run migrations
 # DEV TIP: Uncomment the next 3 lines and run 'docker compose down -v' to hard-reset migrations
-echo "Development Mode: Cleaning old migration files to ensure sync with current models..."
-find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
-find . -path "*/migrations/*.pyc" -delete
+# echo "Development Mode: Cleaning old migration files to ensure sync with current models..."
+# find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+# find . -path "*/migrations/*.pyc" -delete
 
 echo "Generating fresh migrations..."
 python manage.py makemigrations --noinput
@@ -28,5 +28,9 @@ python seed_public.py
 
 echo "Syncing TENANT apps (All Schemas)..."
 python manage.py migrate_schemas --tenant --noinput
+
+# Note: Test data population should be run manually for specific tenants
+# Example: python manage.py populate_test_data --schema=your_tenant_name
+# Or access container: docker exec -it EduSekai_backend python manage.py populate_test_data --schema=your_tenant
 
 exec "$@"

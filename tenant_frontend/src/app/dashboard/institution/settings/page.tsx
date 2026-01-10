@@ -2,12 +2,13 @@
 
 import { useInstitutionProfile, useUpdateInstitutionProfile } from "@/hooks/useProfile";
 import { usePermissions } from "@/providers/PermissionProvider";
+import { getMediaUrl } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -68,6 +69,23 @@ export default function InstitutionSettingsPage() {
         },
     });
 
+    const [selectedLogo, setSelectedLogo] = useState<File | null>(null);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleLogoClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedLogo(file);
+            const previewUrl = URL.createObjectURL(file);
+            setLogoPreview(previewUrl);
+        }
+    };
+
     useEffect(() => {
         if (profile) {
             form.reset({
@@ -107,9 +125,27 @@ export default function InstitutionSettingsPage() {
             toast.error("You do not have permission to edit institutional settings.");
             return;
         }
-        updateProfile(data, {
+
+        const payload = new FormData();
+
+        // Append all text fields from the form
+        Object.keys(data).forEach(key => {
+            const value = (data as any)[key];
+            if (value !== null && value !== undefined) {
+                payload.append(key, value);
+            }
+        });
+
+        // Append logo if selected
+        if (selectedLogo) {
+            payload.append("logo", selectedLogo);
+        }
+
+        updateProfile(payload, {
             onSuccess: () => {
                 toast.success("Institution details updated successfully!");
+                setSelectedLogo(null);
+                setLogoPreview(null);
             },
             onError: () => {
                 toast.error("Failed to update details.");
@@ -149,9 +185,17 @@ export default function InstitutionSettingsPage() {
                             <CardContent className="space-y-6">
                                 <div className="space-y-4">
                                     <Label className="text-xs uppercase font-extrabold text-slate-400 tracking-widest">School Logo</Label>
-                                    <div className="aspect-square bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden">
-                                        {profile?.logo ? (
-                                            <img src={profile.logo} alt="Logo" className="w-full h-full object-contain p-4" />
+                                    <div className="aspect-square bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden"
+                                        onClick={handleLogoClick}>
+                                        <input
+                                            type="file"
+                                            ref={fileInputRef}
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={handleLogoChange}
+                                        />
+                                        {logoPreview || profile?.logo ? (
+                                            <img src={logoPreview || getMediaUrl(profile?.logo) || ''} alt="Logo" className="w-full h-full object-contain p-4" />
                                         ) : (
                                             <>
                                                 <ImageIcon className="h-10 w-10 text-slate-300 mb-2 group-hover:scale-110 transition-transform" />
@@ -160,7 +204,7 @@ export default function InstitutionSettingsPage() {
                                         )}
                                         {canEdit && (
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                                <Button variant="default" size="lg" className="font-bold">Choose Image</Button>
+                                                <Button variant="default" size="lg" className="font-bold pointer-events-none">Choose Image</Button>
                                             </div>
                                         )}
                                     </div>

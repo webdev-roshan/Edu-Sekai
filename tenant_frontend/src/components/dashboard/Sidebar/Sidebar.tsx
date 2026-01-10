@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import Logo from "@/components/Logo";
 import { getMenuItems } from "@/components/dashboard/Sidebar/MenuItems";
 import { usePermissions } from "@/providers/PermissionProvider";
+import { useInstitutionProfile } from "@/hooks/useProfile";
+import { getMediaUrl } from "@/lib/utils";
 
 interface SidebarProps {
     user: any;
@@ -32,7 +34,7 @@ export function Sidebar({ user, isCollapsed, setIsCollapsed }: SidebarProps) {
                     "h-20 flex items-center border-b border-slate-100 dark:border-slate-800 transition-all duration-300",
                     isCollapsed ? "justify-center px-0" : "px-6"
                 )}>
-                    <Logo width={isCollapsed ? 50 : 150} height={isCollapsed ? 50 : 150} />
+                    <InstitutionLogo isCollapsed={isCollapsed} />
                 </div>
 
                 {/* Toggle Button */}
@@ -56,4 +58,25 @@ export function Sidebar({ user, isCollapsed, setIsCollapsed }: SidebarProps) {
             </div>
         </aside>
     );
+}
+
+function InstitutionLogo({ isCollapsed }: { isCollapsed: boolean }) {
+    const { data: institution } = useInstitutionProfile();
+    const logoUrl = getMediaUrl(institution?.logo);
+
+    if (logoUrl) {
+        return (
+            <img
+                src={logoUrl}
+                alt={institution?.name || "Institution Logo"}
+                className="object-contain"
+                style={{
+                    width: isCollapsed ? "40px" : "120px",
+                    height: isCollapsed ? "40px" : "60px"
+                }}
+            />
+        );
+    }
+
+    return <Logo width={isCollapsed ? 50 : 150} height={isCollapsed ? 50 : 40} />;
 }

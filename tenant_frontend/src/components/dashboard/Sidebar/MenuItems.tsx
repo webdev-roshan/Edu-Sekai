@@ -91,7 +91,31 @@ export const getMenuItems = (user: any, can: (permission: string) => boolean): S
         });
     }
 
-    // 6. Portal Access (Restored)
+    // 6. Course Content
+    const courseContentChildren: SidebarItemType[] = [];
+
+    if (can("view_course_content")) {
+        courseContentChildren.push({ label: "Study Materials", href: "/dashboard/course-content/materials" });
+    }
+    if (can("manage_course_content")) {
+        courseContentChildren.push({ label: "Manage Content", href: "/dashboard/course-content/manage" });
+    }
+    if (can("view_course_content") || can("submit_assignment")) {
+        courseContentChildren.push({ label: "Assignments", href: "/dashboard/course-content/assignments" });
+    }
+    if (can("grade_assignment")) {
+        courseContentChildren.push({ label: "Grade Submissions", href: "/dashboard/course-content/grading" });
+    }
+
+    if (courseContentChildren.length > 0) {
+        menuItems.push({
+            label: "Course Content",
+            icon: BookOpen,
+            children: courseContentChildren
+        });
+    }
+
+    // 7. Portal Access
     const accessChildren: SidebarItemType[] = [];
     if (can("activate_student_portal")) {
         accessChildren.push({ label: "Student Portal", href: "/dashboard/portal-access/students" });

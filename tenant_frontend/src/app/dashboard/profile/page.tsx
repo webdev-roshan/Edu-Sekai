@@ -5,7 +5,7 @@ import { useMe } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
     Loader2,
     User,
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { AnyProfile, StaffProfile, StudentProfile } from "@/types/Profile";
+import { getMediaUrl } from "@/lib/utils";
 
 export default function ProfilePage() {
     const { data: user } = useMe();
@@ -29,6 +30,9 @@ export default function ProfilePage() {
     const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
 
     const [formData, setFormData] = useState<Partial<AnyProfile>>({});
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (profile) {
@@ -51,11 +55,44 @@ export default function ProfilePage() {
         setFormData({ ...formData, [e.target.id]: e.target.value });
     };
 
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+        }
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        updateProfile(formData, {
-            onSuccess: () => {
+
+        const payload = new FormData();
+
+        // Append all text fields
+        Object.keys(formData).forEach(key => {
+            const value = (formData as any)[key];
+            if (value !== null && value !== undefined && key !== 'profile_image') {
+                payload.append(key, value as string);
+            }
+        });
+
+        // Append image if selected
+        if (selectedImage) {
+            payload.append("profile_image", selectedImage);
+        }
+
+        updateProfile(payload, {
+            onSuccess: (data) => {
                 toast.success("Profile updated successfully!");
+                // Update local state with returned data (especially the new image URL)
+                setFormData(data);
+                setSelectedImage(null);
+                setImagePreview(null);
             },
             onError: (err) => {
                 toast.error("Failed to update profile.");
@@ -149,9 +186,23 @@ export default function ProfilePage() {
                         </CardHeader>
                         <CardContent className="space-y-6">
                             <div className="space-y-4">
-                                <div className="aspect-square bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden">
-                                    {formData.profile_image ? (
-                                        <img src={formData.profile_image} alt="Profile" className="w-full h-full object-contain p-4" />
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    className="hidden"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                />
+                                <div
+                                    className="aspect-square bg-slate-50 dark:bg-slate-800 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-700 flex flex-col items-center justify-center group relative cursor-pointer overflow-hidden"
+                                    onClick={handleImageClick}
+                                >
+                                    {imagePreview || formData.profile_image ? (
+                                        <img
+                                            src={imagePreview || getMediaUrl(formData.profile_image) || ''}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover"
+                                        />
                                     ) : (
                                         <>
                                             <ImageIcon className="h-10 w-10 text-slate-300 mb-2 group-hover:scale-110 transition-transform" />
@@ -159,7 +210,7 @@ export default function ProfilePage() {
                                         </>
                                     )}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
-                                        <Button variant="default" size="lg" className="font-bold">Choose Image</Button>
+                                        <Button variant="default" size="lg" className="font-bold pointer-events-none">Choose Image</Button>
                                     </div>
                                 </div>
                             </div>
