@@ -143,10 +143,6 @@ export const getMenuItems = (user: any, can: (permission: string) => boolean): S
         adminChildren.push({ label: "Roles & Permissions", href: "/dashboard/institution/roles" });
     }
 
-    if (can("view_family")) {
-        adminChildren.push({ label: "Family Accounts", href: "/dashboard/institution/families" });
-    }
-
     if (adminChildren.length > 0) {
         menuItems.push({
             label: "Administration",
