@@ -163,9 +163,9 @@ function GetStartedContent() {
     }
 
     return (
-        <div className="flex min-h-screen bg-linear-to-br from-blue-50 via-teal-50 to-green-50">
+        <div className="flex min-h-screen from-blue-50 via-teal-50 to-green-50">
             {/* Left Side - Information */}
-            <div className="hidden lg:flex lg:w-5/12 bg-linear-to-br from-blue-600 to-teal-600 p-12 flex-col justify-between text-white">
+            <div className="hidden lg:flex lg:w-5/12 bg-primary p-12 flex-col justify-between text-white">
                 <div>
                     <div className="flex items-center gap-3 mb-12">
                         <GraduationCap className="h-10 w-10" />
@@ -226,11 +226,7 @@ function GetStartedContent() {
                     </div>
                 </div>
 
-                <div className="pt-12 border-t border-white/20">
-                    <p className="text-blue-100 text-sm">
-                        Trusted by 500+ educational institutions worldwide
-                    </p>
-                </div>
+                Please enter your credentials to access your dashboard
             </div>
 
             {/* Right Side - Form */}
@@ -358,7 +354,7 @@ function GetStartedContent() {
 
                                     <Button
                                         type="submit"
-                                        className="w-full h-12 text-base font-semibold bg-linear-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700"
+                                        className="inline-flex items-center justify-center gap-2 whitespace-nowrap disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive cursor-pointer bg-sky-600 hover:bg-teal-600 shadow-lg shadow-sky-500/25 transition-all text-base font-bold text-white duration-300 ease-in-out h-12 rounded-md px-8 has-[>svg]:px-4 w-full"
                                         disabled={isChecking}
                                     >
                                         {isChecking ? (

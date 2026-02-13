@@ -4,7 +4,8 @@ import uuid
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.conf import settings
+
+# Payment Viewsttings
 from .models import Payment
 from .utils import generate_esewa_signature
 from accounts.serializers import OrganizationRegisterSerializer

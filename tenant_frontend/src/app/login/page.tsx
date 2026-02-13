@@ -13,7 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { FloatingLabelInput } from "@/components/ui/floating-label-input";
-import Logo from "@/components/Logo";
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -36,7 +36,8 @@ export default function LoginPage() {
             <div className="hidden lg:flex lg:w-5/12 bg-sky-600 p-12 flex-col justify-between text-white relative overflow-hidden">
                 <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-12 animate-in slide-in-from-left duration-700">
-                        <Logo width={200} height={200} />
+                        <GraduationCap className="h-10 w-10" />
+                        <span className="text-3xl font-bold">Edu Sekai</span>
                     </div>
 
                     <div className="space-y-10">
